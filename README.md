@@ -86,7 +86,7 @@ The PWA browser suite downloads the entire catalog through the header button und
 
 ## Child sessions and home practice
 
-There are no child accounts. The app keeps one learner per device, created automatically on first launch, so there is nothing to sign in to, switch or delete. Workspace, evidence and activities are stored in this browser's local storage under `sentences-builder-v1`, separate from every other app. Reports remain local to this browser/device.
+Each app has its own child accounts, separate from every other app: the first launch asks for the child's name, and the accounts button beside the therapist button adds or switches children behind a short parent check. Progress, reports and the intervention plan belong to the active child. Workspace, evidence and activities are stored in this browser's local storage under `sentences-builder-v1`, separate from every other app. Reports remain local to this browser/device.
 
 The workplace defaults to the first sentence in the first two-word subgroup. Pressing an advanced group expands all its subgroup choices. Selecting a subgroup collapses the list and retains the chosen subgroup as a green card beneath the group; arrows browse the subgroup without requiring playback. Two learned icons in each picker show copies of cards/sentences that achieved 80% in comprehension or expression. Every item stays available in its ordinary category.
 

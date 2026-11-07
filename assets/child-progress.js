@@ -150,7 +150,5 @@
         let storage;
         try { storage = root.localStorage; } catch { storage = { getItem() {}, setItem() { throw Error('unavailable'); } }; }
         root.SenbProgress = create(storage, () => root.dispatchEvent(new Event('senb-storage-error')), () => root.dispatchEvent(new Event('senb-progress-change')));
-        // One learner per device: there are no child accounts to create or switch.
-        if (!root.SenbProgress.active()) root.SenbProgress.signIn('الطفل');
     }
 })(globalThis);

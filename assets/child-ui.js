@@ -20,6 +20,7 @@
             button.title = `ملف الطفل: ${name}`;
         };
         update();
+        document.querySelector('.header-actions.app-home-tools, .app-home-tools')?.append(button);
         const enter = name => {
             name = String(name || '').normalize('NFKC').trim().replace(/\s+/g, ' ').slice(0, 60);
             if (!name) { input.focus(); return; }
@@ -86,8 +87,9 @@
             const refresh = () => { lesson.hidden = !P.lesson(); report.disabled = !P.active(); };
             refresh(); window.addEventListener('senb-progress-change', refresh); window.addEventListener('senb-profile-memorychange', refresh);
         }
-        window.SenbProfile = { open() {} };
-        window.SuiteWelcome?.connect();
+        window.SenbProfile = { open };
+        const welcoming=window.SuiteWelcome?.connect(P,name=>{authorized=true;enter(name);});
+        if (!welcoming && !P.active() && !new URLSearchParams(location.search).has('reportChild') && !new URLSearchParams(location.search).has('createProfile')) open();
     }
     window.addEventListener('senb-storage-error', () => {
         if (document.querySelector('.senb-storage-error')) return;
