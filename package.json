@@ -5,7 +5,7 @@
   "scripts": {
     "build:css": "tailwindcss -c tailwind.config.cjs -i assets/tailwind.css -o assets/utilities.css --minify",
     "build:pwa": "node scripts/build-pwa.cjs",
-    "test": "node tests/verb-context.cjs && node tests/audio.cjs && node tests/activities-model.cjs && node tests/offline.cjs && node tests/child-progress.cjs && node tests/session-model.cjs",
+    "test": "node tests/verb-context.cjs && node tests/audio.cjs && node tests/activities-model.cjs && node tests/offline.cjs && node tests/child-progress.cjs && node tests/session-model.cjs && node tests/acquisition-reports.cjs && node tests/demo-position.cjs && node tests/session-homework.cjs",
     "test:browser": "node tests/standalone-browser.cjs && node tests/dynamic-browser.cjs && node tests/expression-animation-browser.cjs && node tests/workplace-frame-browser.cjs && node tests/workplace-metronome-browser.cjs && node tests/picker-progress-browser.cjs",
     "build:icons": "node scripts/build-icons.cjs",
     "test:workplace:browser": "node tests/workplace-metronome-browser.cjs && node tests/workplace-frame-browser.cjs",

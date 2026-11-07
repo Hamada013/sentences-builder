@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict');
+const SENB=require('../assets/session-reports.js');
+const now=new Date('2026-10-18T18:00:00Z'),date='2026-10-18T09:00:00Z';
+const session=(id,domain,records,extra={})=>({id,date,domain,kind:'assessment',records,...extra});
+const sentence=(i,domain='receptive',correct=1,total=1,presentation='advanced')=>({key:`s:2/1/${i}`,title:`عنوان الجملة ${i}`,entity:'sentence',domain,presentation,correct,total});
+let list=[session('first',null,[sentence(1),sentence(1,'expressive')])];
+let progress=SENB.summarize(list,'all',now).acquisition;
+assert.equal(progress.types.length,1);assert.equal(progress.groups.length,1);assert.equal(progress.groups[0].receptive.percentage,4.17);assert.equal(progress.types[0].receptive.percentage,.52);assert.equal(progress.types[0].total,192);
+list.push(session('repeat',null,[sentence(1,'receptive',1,1,'slots')]));assert.equal(SENB.summarize(list,'all',now).acquisition.groups[0].receptive.acquired,1,'The same sentence in both image modes counts once');
+list.push(session('full-group',null,Array.from({length:24},(_,i)=>sentence(i+1)),{date:'2026-10-18T10:00:00Z'}));progress=SENB.summarize(list,'all',now).acquisition;assert.equal(progress.groups[0].receptive.percentage,100);assert.equal(progress.types[0].receptive.percentage,12.5);
+list.push(session('drop',null,[sentence(1,'receptive',0)],{date:'2026-10-18T11:00:00Z'}));progress=SENB.summarize(list,'all',now).acquisition;assert.equal(progress.groups[0].receptive.acquired,23);assert.equal(progress.groups[0].receptive.percentage,95.83);
+list.push(session('partial',null,[sentence(1)],{partial:true,date:'2026-10-18T12:00:00Z'}));assert.equal(SENB.summarize(list,'all',now).acquisition.groups[0].receptive.acquired,23);
+const wordOnly=[session('word',null,[{key:'w:01 subject/1',title:'ولد',entity:'word',domain:'expressive',correct:1,total:1}])];assert.equal(SENB.summarize(wordOnly,'all',now).acquisition.types.length,0);assert.deepEqual(SENB.summarize(wordOnly,'all',now).domains.expressive,{correct:0,total:0});
+const practiced=SENB.summarize([session('practice',null,[sentence(2)],{kind:'practice'})],'all',now).acquisition;assert.equal(practiced.groups[0].receptive.acquired,0);assert.equal(practiced.groups[0].worked,1);
+const custom=SENB.summarize([session('custom',null,[{...sentence(1),key:'b:custom'}])],'all',now).acquisition;assert.equal(custom.types.length,0);assert.equal(custom.custom.total,1);assert.equal(custom.custom.receptive.percentage,100,'Custom sentences never pretend to complete a catalog subgroup');
+console.log('PASS: SENB sentence acquisition 1/24=4.17%, complete-test groups, latest-result decline, word-only and custom sessions.');
