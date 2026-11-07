@@ -169,6 +169,14 @@
     :is(#homeView, #home-view) .app-home-screen--four .app-home-action-icon { width: 36px; height: 36px; border-radius: 12px; }
     :is(#homeView, #home-view) .app-home-screen--four .app-home-action-icon svg { width: 28px; height: 28px; }
 }
+/* Tablets: use the larger screen instead of phone-sized cards. */
+@media (min-width: 768px) and (min-height: 820px) {
+    :is(#homeView, #home-view) .app-home-logo, :is(#homeView, #home-view) .app-home-screen--four .app-home-logo { width: 160px; height: 160px; }
+    :is(#homeView, #home-view) .app-home-description { font-size: 17px; }
+    :is(#homeView, #home-view) .app-home-actions { max-width: 640px; gap: 24px; }
+    :is(#homeView, #home-view) .app-home-action, :is(#homeView, #home-view) .app-home-screen--four .app-home-action { min-height: 190px; padding: 22px; font-size: 25px; }
+    :is(#homeView, #home-view) .app-home-action-icon svg { width: 46px; height: 46px; }
+}
 @media (prefers-reduced-motion: reduce) {
     :is(#homeView, #home-view) .app-home-action { transition: none; }
 }

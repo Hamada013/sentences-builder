@@ -138,6 +138,7 @@
             workspace: () => load('workspace'), saveWorkspace: snapshot => save('workspace', snapshot),
             draft: () => load('draft'), saveDraft: draft => save('draft', draft),
             lesson: () => load('lesson'), saveLesson: lesson => save('lesson', lesson),
+            intervention: () => load('intervention'), saveIntervention: plan => save('intervention', plan),
             sessions: () => clone(active()?.senb?.sessions || []),
             learned: (key, domain) => domains.includes(domain) && active()?.senb?.mastery?.[String(key)]?.[domain]?.passed === true,
             storageOK: () => storageOK

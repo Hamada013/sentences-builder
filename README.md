@@ -2,6 +2,10 @@
 
 Published at https://hamada013.github.io/sentences-builder/. Serve the repository root over HTTPS or localhost; `index.html`, `manifest.webmanifest`, `sw.js`, `assets/`, `images/` and `sounds/` must stay together. No runtime build, CDN JavaScript, framework or backend is required. The optional Google font falls back to the system font when unavailable. The app is standalone: it has no links to other apps or websites.
 
+## Therapist mode and intervention plan
+
+The shield button in the home header asks for the therapist password (**013**). Therapist mode lasts for the current tab and shows the **خطة التدخل** button (جملة has no locked levels to open). There the therapist picks short-term goals from this app's goal bank, rates each 20/40/60/80%, and downloads a PDF progress report: goals in progress, then goals achieved at 80% on a separate page, then references. See [docs/intervention-goals.md](docs/intervention-goals.md).
+
 ## Files
 
 - `index.html`: Arabic RTL markup and toolbar/dialog structure.
