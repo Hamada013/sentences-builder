@@ -14,10 +14,6 @@ const DB=run('ITEMS_DATABASE'),VC=run('VERB_CONJUGATIONS'),ADV=run('ADVANCED_CAT
 const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 const exists=file=>fs.existsSync(path.join(root,file));
 
-// Person of each pronoun card, read from its Arabic word (the stored codes are legacy).
-const PERSON={'انا':'i','هاد':'he','هي':'she','هذا':'he','هذه':'she','هم':'they','انتَ':'youmale','انتِ':'youfemale','انتما':'youplural','نحن':'we','هدول':'they'};
-const OWN_M={i:'تبعي',he:'تبعو',she:'تبعها',we:'تبعنا',they:'تبعهم',youmale:'تبعك',youfemale:'تبعك',youplural:'تبعكم'};
-const OWN_F={i:'تبعتي',he:'تبعتو',she:'تبعتها',we:'تبعتنا',they:'تبعتهم',youmale:'تبعتك',youfemale:'تبعتك',youplural:'تبعتكم'};
 const PERSONS=[['i','أنا'],['he','هو'],['she','هي'],['we','نحن'],['they','هم'],['youmale','أنتَ'],['youfemale','أنتِ'],['youplural','أنتم']];
 
 const groups=[];
@@ -41,14 +37,15 @@ group('صفات · مذكر','adjectives/male',words('05 adjectives',item=>item.
 group('صفات · مؤنث','adjectives/female',words('05 adjectives',item=>item.titleFemale));
 group('ألوان · مذكر','colors/male',words('10 colors',item=>item.titleMale));
 group('ألوان · مؤنث','colors/female',words('10 colors',item=>item.titleFemale));
-const pronounNote='صور بطاقات الضمائر لا تطابق بعض الكلمات (مثلاً البطاقة 4 صورة ولد ومكتوب «هذا»). سجّل ما تريد أن يظهر على البطاقة بعد مراجعتها.';
-group('ضمائر','pronoun',words('07 Pronoun').map(item=>({...item,check:true})),pronounNote);
-const own=(table,label)=>DB['07 Pronoun'].map(item=>{const word=item.title.trim(),person=PERSON[word];return {id:item.id,text:person?table[person]:'—',hint:`البطاقة: ${word}`,check:true};});
-group('ملكية مع اسم مذكر','for possessive male noun',own(OWN_M),'الصيغة المكتوبة اقتراح باللهجة (تبعي/تبعو…). البطاقة لا تعرض هذه الصيغة حاليًا؛ أكّد الكلمة قبل التسجيل.');
-group('ملكية مع اسم مؤنث','for possessive female noun',own(OWN_F),'الصيغة المكتوبة اقتراح باللهجة (تبعتي/تبعتو…). أكّد الكلمة قبل التسجيل.');
-group('ضمائر مع الأفعال','for possessive verbs',DB['07 Pronoun'].map(item=>({id:item.id,text:item.title.trim(),hint:'الصيغة غير محدّدة في التطبيق',check:true})),'التطبيق لا يحدّد ما يقال هنا. حدّد الصيغة قبل التسجيل.');
+group('ضمائر','pronoun',words('07 Pronoun'));
+// Possessive clips are the pronoun as an attached suffix (reviewed 2026-11-19): record the same suffix as the current file.
+const suffix=kind=>DB['07 Pronoun'].map(item=>({id:item.id,text:item.title.trim(),hint:kind}));
+const suffixNote='كل ملف هو لاحقة الضمير المتصلة. اسمع الملف الحالي وسجّل نفس اللاحقة.';
+group('ملكية مع اسم مذكر','for possessive male noun',suffix('لاحقة مع اسم مذكر'),suffixNote);
+group('ملكية مع اسم مؤنث','for possessive female noun',suffix('لاحقة مع اسم مؤنث'),suffixNote);
+group('ضمائر مع الأفعال','for possessive verbs',suffix('لاحقة مع فعل'),suffixNote);
 for(const [tense,tenseName] of [['present','مضارع'],['past','ماضي']])for(const [code,personName] of PERSONS)
- group(`أفعال · ${tenseName} · ${personName}`,`verbs/${tense}/${code}`,DB['02 verbs'].map(verb=>({id:verb.id,text:VC[verb.id]?.[tense]?.[code]||verb.title,check:verb.id===15})),tense==='present'?'الملف 15 هو «بدّ» (يريد): يُستعمل أول كل فعل مستقبل، مثل «بدو» + «ياكل».':'');
+ group(`أفعال · ${tenseName} · ${personName}`,`verbs/${tense}/${code}`,DB['02 verbs'].map(verb=>({id:verb.id,text:VC[verb.id]?.[tense]?.[code]||verb.title})),tense==='present'?'الملف 15 هو «بدّ» (يريد): يُستعمل أول كل فعل مستقبل، مثل «بدو» + «ياكل».':'');
 
 const sentences=[];
 for(const category of ADV)for(const sub of category.subcategories){
@@ -91,9 +88,9 @@ h2 small{font:9pt "SF Mono",Menlo,monospace;color:#4a6572;white-space:nowrap}
 .todo td,.todo th{border-bottom:.3mm solid #e3ebf0;padding:1.6mm 2mm;text-align:start;font-size:11pt}.todo{border-collapse:collapse;width:100%}.todo code{font:9.5pt "SF Mono",Menlo,monospace;direction:ltr;unicode-bidi:embed}
 </style><body>
 <section class="cover"><h1>قائمة الأصوات · جملة</h1><p class="sub">كل تسجيل يشغّله التطبيق، مرتّب حسب المجلد · ${new Date().toISOString().slice(0,10)}</p>
-<div class="stat"><div><b>${all.length}</b>تسجيل</div><div class="red"><b>${missing.length}</b>ناقص الآن</div><div class="amber"><b>${checks.length}</b>تحقّق قبل التسجيل</div><div><b>${sentences.length*24}</b>جملة كاملة</div></div>
-<ol><li>اقرأ الكلمة كما هي مكتوبة، بصوت واضح وهادئ، بنفس اللهجة في كل الملفات.</li><li>احفظ كل تسجيل باسم رقمه بصيغة <b dir="ltr">m4a</b> (مثل <b dir="ltr">12.m4a</b>) داخل المجلد المكتوب في رأس القسم.</li><li>اترك أقل من ربع ثانية صمت في أول التسجيل وآخره، وبنفس مستوى الصوت.</li><li>الأرقام الحمراء ملفات غير موجودة الآن: ابدأ بها. الأرقام البرتقالية تحتاج قرارًا قبل التسجيل.</li><li>«نفس الملف» يعني أن الكلمة مكرّرة في المجلد: سجّلها مرة وانسخ الملف بالاسم الثاني.</li><li>بعد وضع الملفات شغّل <b dir="ltr">npm run build:pwa</b> ليعمل التطبيق بدون إنترنت.</li><li>لا حاجة لمجلد <b dir="ltr">sounds/verbs/future</b>: المستقبل يُقال «بدّ» (الملف 15) ثم الفعل المضارع.</li></ol>
-<div class="legend"><span><i class="swatch" style="background:#b3261e"></i>ناقص</span><span><i class="swatch" style="background:#b7791f"></i>تحقّق</span><span><i class="swatch" style="background:#246b86"></i>موجود (لإعادة التسجيل)</span><span><i class="box"></i>تمّ التسجيل</span></div></section>
+<div class="stat"><div><b>${all.length}</b>تسجيل</div><div class="red"><b>${missing.length}</b>ناقص الآن</div><div><b>${sentences.length*24}</b>جملة كاملة</div></div>
+<ol><li>اقرأ الكلمة كما هي مكتوبة، بصوت واضح وهادئ، بنفس اللهجة في كل الملفات.</li><li>احفظ كل تسجيل باسم رقمه بصيغة <b dir="ltr">m4a</b> (مثل <b dir="ltr">12.m4a</b>) داخل المجلد المكتوب في رأس القسم.</li><li>اترك أقل من ربع ثانية صمت في أول التسجيل وآخره، وبنفس مستوى الصوت.</li><li>النص مكتوب بالعربية الفصحى، والتسجيل يكون باللهجة كما في الملفات الحالية.</li><li>الأرقام الحمراء ملفات غير موجودة الآن: ابدأ بها.</li><li>«نفس الملف» يعني أن الكلمة مكرّرة في المجلد: سجّلها مرة وانسخ الملف بالاسم الثاني.</li><li>بعد وضع الملفات شغّل <b dir="ltr">npm run build:pwa</b> ليعمل التطبيق بدون إنترنت.</li><li>لا حاجة لمجلد <b dir="ltr">sounds/verbs/future</b>: المستقبل يُقال «بدّ» (الملف 15) ثم الفعل المضارع.</li></ol>
+<div class="legend"><span><i class="swatch" style="background:#b3261e"></i>ناقص</span><span><i class="swatch" style="background:#246b86"></i>موجود (لإعادة التسجيل)</span><span><i class="box"></i>تمّ التسجيل</span></div></section>
 <h1 class="part" style="page-break-before:auto">ابدأ هنا: الملفات الناقصة</h1>
 <table class="todo"><tr><th>المجلد</th><th>العدد</th><th>الأرقام</th></tr>${missingByFolder.map(([folder,items])=>`<tr><td><code>${esc(folder)}/</code></td><td>${items.length}</td><td dir="ltr">${items[0].id}–${items.at(-1).id}</td></tr>`).join('')}</table>
 <p class="note" style="margin-top:4mm">صيغة «أنتم» في المضارع ناقصة كلها تقريبًا. تجدها كاملة في قسم «أفعال · مضارع · أنتم» بالأحمر.</p>
