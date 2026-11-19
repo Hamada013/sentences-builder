@@ -42,7 +42,7 @@ assert.match(note, /الفهم:/);
 assert.match(note, /التعبير:/);
 assert.match(note, /لسه عم أتعلّم/);
 assert.match(note, /ما سجّلنا نتيجة بهالمهارة لـ: غير مقيّمة/);
-assert.match(note, /أغراض البيت/);
+assert.match(note, /ماما وبابا، خلّونا نلعب شوي بالبيت! 💛\n.*«ولد يأكل»/, 'The note ends with a home activity built on today\'s sentence');
 assert.doesNotMatch(note, /اضغط|التطبيق|الشاشة/);
 assert.equal((note.match(/اليوم اشتغلت على هالجمل: ولد يأكل/g) || []).length, 1);
 const diagnostic = R.summarize([session('same-response', today, 'assessment', [row('s:2/1/1', 'sentence', 'expressive', 'slots', 1, 2), row('ولد', 'word', 'expressive', 'slots', 1), row('يأكل', 'word', 'expressive', 'slots', 0)])], 'day', now);

@@ -25,7 +25,10 @@ for (const entry of catalog.assets) {
     if (entry.url.endsWith('.m4a')) assert.equal(body.subarray(4, 8).toString(), 'ftyp');
 }
 assert.equal(catalog.totalBytes, catalog.assets.reduce((sum, entry) => sum + entry.bytes, 0));
-assert.equal(catalog.assets.length, [...physical].filter(url => /\.(webp|png|m4a)$/.test(url)).length);
+// Every media file is in the catalog except the never-played future verb clips
+// (future speech is present "want" + present verb).
+assert.equal(catalog.assets.length, [...physical].filter(url => /\.(webp|png|m4a)$/.test(url) && !url.startsWith('sounds/verbs/future/')).length);
+assert.ok(!catalog.assets.some(entry => entry.url.startsWith('sounds/verbs/future/')), 'Unused future clips are not downloaded');
 const release = require('./module-release.cjs')('senb');
 for (const file of release.shell) {
     assert.ok(fs.existsSync(path.join(root,file)),file);

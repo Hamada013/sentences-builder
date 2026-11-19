@@ -5,21 +5,27 @@
     const profileIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>';
     function init() {
         const dialog = document.createElement('dialog');
-        dialog.id = 'senb-child-dialog'; dialog.className = 'senb-child-dialog'; dialog.setAttribute('aria-labelledby', 'senb-child-title');
-        dialog.innerHTML = '<h2 id="senb-child-title">ملف الطفل</h2><form><label for="senb-child-name">اسم الطفل</label><input id="senb-child-name" name="name" autocomplete="off" maxlength="60" required><div class="senb-saved-children"></div><footer><button type="button" data-child-close>إغلاق</button><button type="submit" class="senb-child-enter">دخول</button></footer></form>';
+        dialog.id = 'senb-child-dialog'; dialog.className = 'suite-account-dialog'; dialog.setAttribute('aria-labelledby', 'senb-child-title');
+        dialog.innerHTML = '<div class="account-head"><h2 id="senb-child-title">حسابات الأطفال</h2><div class="account-head-tools"><button type="button" data-child-close aria-label="إغلاق" title="إغلاق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div></div><form class="account-add"><label for="senb-child-name">فتح أو إضافة طفل</label><div class="account-add-row"><input id="senb-child-name" name="name" autocomplete="off" maxlength="60" required dir="auto" placeholder="اسم الطفل"><button type="submit" class="senb-child-enter">دخول / إضافة</button></div></form><div class="senb-saved-children"></div>';
         document.body.append(dialog);
         const input = dialog.querySelector('input');
         let authorized = false, opening = false;
         const button = document.createElement('button');
         button.type = 'button'; button.className = 'senb-child-button'; button.dataset.senbChildProfile = '';
-        button.innerHTML = `${profileIcon}<span></span>`;
+        button.innerHTML = `${profileIcon}<span class="senb-child-name"></span>`;
         const update = () => {
             const name = P.active()?.name || 'اسم الطفل';
-            button.querySelector('span').textContent = name;
+            button.querySelector(".senb-child-name").textContent = name;
+            // The active child's drawn head replaces the generic person icon.
+            const chip = P.active() && window.SuiteAccounts?.avatarFor(P.active());
+            const icon = button.firstElementChild;
+            if (chip) { const holder = document.createElement('span'); holder.className = 'suite-account-chip'; holder.append(chip); icon.replaceWith(holder); }
             button.setAttribute('aria-label', `ملف الطفل: ${name}`);
             button.title = `ملف الطفل: ${name}`;
         };
         update();
+        window.addEventListener('DOMContentLoaded', update, { once: true });
+        window.addEventListener('suite-avatar-change', update);
         document.querySelector('.header-actions.app-home-tools, .app-home-tools')?.append(button);
         const enter = name => {
             name = String(name || '').normalize('NFKC').trim().replace(/\s+/g, ' ').slice(0, 60);
@@ -42,22 +48,20 @@
             opening = true; authorized = false;
             window.dispatchEvent(new Event('senb-profile-open'));
             const owner = P.active()?.id || null;
-            const needsGate = !!owner || P.children().some(child => child.role !== 'admin');
+            const needsGate = !!owner || P.children().length > 0;
             try {
                 if (needsGate && !await (window.ChildAccountGate?.request() || Promise.resolve(false))) return;
                 if (owner !== (P.active()?.id || null)) return;
                 authorized = true;
-                input.value = typeof requestedName === 'string' ? requestedName : P.active()?.name || '';
+                input.value = typeof requestedName === 'string' ? requestedName : '';
                 dialog.querySelector('[data-child-close]').hidden = !P.active();
                 const savedChildren = dialog.querySelector('.senb-saved-children');
-                const admin = P.active()?.role === 'admin';
-                dialog.querySelector('#senb-child-title').textContent=admin?'Hamada':'ملف الطفل';
                 window.SuiteAccounts.render(savedChildren,P.children(),child=>{
                     const saved=document.createElement('button');saved.type='button';saved.textContent=child.name;saved.onclick=()=>enter(child.name);
                     return window.SuiteAccounts.row(child,saved);
                 });
                 if (!dialog.open) dialog.showModal();
-                input.focus(); input.select();
+                input.focus();
             } finally { opening = false; }
         };
         button.addEventListener('click', open);

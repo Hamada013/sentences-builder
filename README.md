@@ -46,7 +46,9 @@ Some legacy presets use alternate category spellings. Activities resolve these o
 
 All 630 basic image files, all advanced images, and all 960 advanced audio files exist. All card images now use WebP and recordings use M4A. The shared image helper resolves the physical `images/07 pronouns/` folder; audio uses the physical `sounds/prepositions/` folder. Vocabulary category IDs and grammatical codes remain unchanged. The existing logo and installation icons remain PNG for platform compatibility.
 
-The supplied library is missing 198 recordings: `sounds/verbs/present/youplural/1.m4a`–`99.m4a` and `sounds/verbs/future/youplural/1.m4a`–`99.m4a`. The mappings and conjugation text remain unchanged; missing media uses the browser's Arabic speech synthesis when available. Future slot speech now plays `present/<subject>/15.m4a` (want) followed by `present/<subject>/<verb-id>.m4a`; separate future verb recordings are not required. The present `youplural` recordings are still needed for recorded speech in those forms.
+The library is missing 99 recordings: `sounds/verbs/present/youplural/1.m4a`–`99.m4a`. Missing media uses the browser's Arabic speech synthesis when available. Future slot speech plays `present/<subject>/15.m4a` (want) followed by `present/<subject>/<verb-id>.m4a`; the verb "want" (15) itself plays its single present clip in every tense. `sounds/verbs/future/` is never played and is left out of the offline download.
+
+**Recording sheet.** `docs/SOUND-SCRIPT.pdf` lists every clip the app can play (3,192), grouped by folder with the Arabic to say, missing files in red and items that need a decision in orange. `docs/PRONOUN-CHECK.pdf` shows each pronoun card's picture and word with tap-to-play links (from the published site) for its four recordings, for checking pictures, words and possessive forms (`npm run build:pronoun:pdf`). The sound list is generated from the app's own data: rerun `npm run build:sounds:pdf` after changing vocabulary or presets (`SENB_PLAYWRIGHT` can point to a Playwright install).
 
 ## Development
 
@@ -88,6 +90,8 @@ The PWA browser suite downloads the entire catalog through the header button und
 
 Each app has its own child accounts, separate from every other app: the first launch asks for the child's name, and the accounts button beside the therapist button adds or switches children behind a short parent check. Progress, reports and the intervention plan belong to the active child. Workspace, evidence and activities are stored in this browser's local storage under `sentences-builder-v1`, separate from every other app. Reports remain local to this browser/device.
 
+The accounts window has the same layout as VB-MAPP's and is shared with كلمة and مقطع (`assets/accounts.js` plus the account block at the end of `assets/flow-ui.css`; the three copies are identical except `KEY`). Each child gets one of 25 drawn animal heads; tapping a head picks another free one, and the active child's head also shows on the header profile button. Every child row has a delete button: the window is already behind the parent check, then one confirmation. Deleting the open child returns to the accounts window. The protected Hamada account cannot be deleted.
+
 The workplace defaults to the first sentence in the first two-word subgroup. Pressing an advanced group expands all its subgroup choices. Selecting a subgroup collapses the list and retains the chosen subgroup as a green card beneath the group; arrows browse the subgroup without requiring playback. Two learned icons in each picker show copies of cards/sentences that achieved 80% in comprehension or expression. Every item stays available in its ordinary category.
 
 The workplace test icon introduces every visible sentence/word card with its sound, a glowing cue, an animated white hand and a green tick. A colorful 1–2–3 countdown precedes the assessment. Test prompts use a random order; errors replay the same prompt, and corrections retain the first-answer error. After a sentence, icon buttons choose another sentence or continue to automatic practice.
@@ -100,7 +104,7 @@ Completed assessments save dated sentence/word evidence. Practice and incomplete
 
 New behavior lives in `child-progress.js`, `child-ui.js`, `session-model.js`, `session.js` and `session-reports.js`, with local styles. Run `npm run test:sessions` for profile, planning and report checks, and `npm run test:sessions:browser` for picker, cross-app profiles, complete sessions and reports. Browser checks can use `SENB_PLAYWRIGHT` to locate Playwright. `tests/session-edge-browser.cjs` covers custom/duplicate cards and accepts `SENB_ENGINE=webkit`.
 
-The older `npm test` currently encounters pre-existing baseline drift: the checked-in data/advanced/grammar hashes already disagree with `tests/baseline.json`. Two existing `.webp` files (`images/02 verbs/15.webp` and `images/logo.webp`) also contain PNG data, which the older media-format assertion rejects. These source data/media files and baselines were retained during this session-flow change.
+`npm test` passes. `tests/regression.cjs` (run by `npm run test:data`) still reports the older baseline drift: the checked-in data/advanced/grammar hashes disagree with `tests/baseline.json`, and the 2026-11-19 fix of the verb "want" conjugations changed the data again. Update the baseline only after reviewing the content.
 
 `tests/dynamic-browser.cjs` covers the modeled activity flows, blocked-audio recovery, wrong/correct drag placement, scoring, metronome order/count, responsive layouts, and pause/reload cancellation in Chromium and WebKit. Parent account checks in both apps use three unique answer buttons for each fresh equation.
 

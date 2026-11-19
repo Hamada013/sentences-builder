@@ -88,7 +88,7 @@
             let child = data.children.find(entry => normalizeName(entry.name).toLocaleLowerCase() === name.toLocaleLowerCase());
             if (existing && !child) { child = clone(existing); data.children.push(child); }
             if (!child) {
-                child = { id: root.crypto?.randomUUID?.() || `child-${Date.now()}-${Math.random().toString(36).slice(2)}`, name, apps: { senb: true }, role: name.toLocaleLowerCase() === 'hamada' ? 'admin' : 'child', created: new Date().toISOString(), words: {}, workspace: null, plan: null, sessions: [] };
+                child = { id: root.crypto?.randomUUID?.() || `child-${Date.now()}-${Math.random().toString(36).slice(2)}`, name, apps: { senb: true }, role: 'child', created: new Date().toISOString(), words: {}, workspace: null, plan: null, sessions: [] };
                 data.children.push(child);
             }
             child.apps = { ...child.apps, voc: true, senb: true, taffaha: true };

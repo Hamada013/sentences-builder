@@ -177,6 +177,11 @@ function resolveAudioPath(item, rowNumber, slotIndex) {
 // Future slot speech is composed from "want" (15) and the present-tense verb.
 // Both clips use the same subject context as the displayed conjugation.
 function getSlotAudioSegments(item, rowNumber, slotIndex) {
+    // "want" (15) itself is never doubled: its future is the single present clip.
+    if (item.categoryId === '02 verbs' && item.verbTense === 'future' && Number(item.id) === 15) {
+        const presentWant = { ...item, verbTense: 'present' };
+        return [{ path: resolveAudioPath(presentWant, rowNumber, slotIndex), text: getDisplayedItemTitle(item, rowNumber, slotIndex) }];
+    }
     if (item.categoryId !== '02 verbs' || item.verbTense !== 'future') {
         return [{
             path: resolveAudioPath(item, rowNumber, slotIndex),

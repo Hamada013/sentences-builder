@@ -18,7 +18,8 @@ function mediaFiles(){
    files.push(...fs.readdirSync(path.join(ROOT,kind,String(category))).filter(name=>new RegExp(`^\\d+\\.${ext}$`).test(name)).sort().map(name=>`${kind}/${category}/${name}`));
   return files;
  }
- if(MODULE==='senb')return [...walk('images'),...walk('sounds')].filter(file=>/\.(webp|png|m4a)$/.test(file)).sort();
+ // Future verbs are spoken as present "want" + present verb, so sounds/verbs/future is never played.
+ if(MODULE==='senb')return [...walk('images'),...walk('sounds')].filter(file=>/\.(webp|png|m4a)$/.test(file)&&!file.startsWith('sounds/verbs/future/')).sort();
  const used=new Set(),{words}=JSON.parse(fs.readFileSync(path.join(ROOT,'assets/words.json')));
  for(const word of words)for(const asset of [word.image,word.audio,...word.syllableAudio]){
   if(asset.library!=='taffaha'||!/^assets\/(images|sounds)\//.test(asset.path)||asset.path.split('/').includes('..'))throw Error('Invalid media: '+asset.path);

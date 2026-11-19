@@ -324,7 +324,7 @@
     { id: 38, title: 'عيادة طبيب العيون', genderCode: 'he', gender: 'male' },
     { id: 39, title: 'البستان', genderCode: 'he', gender: 'male' },
     { id: 40, title: 'الرصيف', genderCode: 'he', gender: 'male' },
-    { id: 41, title: 'حديقة الاللعاب', genderCode: 'he', gender: 'male' },
+    { id: 41, title: 'حديقة الألعاب', genderCode: 'he', gender: 'male' },
     { id: 42, title: 'مركز الشرطة', genderCode: 'he', gender: 'male' },
     { id: 43, title: 'السكة', genderCode: 'he', gender: 'male' },
     { id: 44, title: 'النهر', genderCode: 'he', gender: 'male' },
@@ -610,9 +610,10 @@
                 future: { i: 'بدي أقعد', he: 'بدو يقعد', she: 'بدها تقعد', we: 'بدنا نقعد', they: 'بدهم يقعدوا', youmale: 'بدك تقعد', youfemale: 'بدك تقعدي', youplural: 'بدكم تقعدوا' } 
             },
             15: { 
-                past: { i: 'بدي', he: 'بدها', she: 'بده', we: 'بكم', they: 'بدك', youmale: 'بدك', youfemale: 'بدنا', youplural: 'بدهم' }, 
-                present: { i: 'بدي', he: 'بدها', she: 'بده', we: 'بكم', they: 'بدك', youmale: 'بدك', youfemale: 'بدنا', youplural: 'بدهم' }, 
-                future: { i: 'بدي بدي', he: 'بدها بدها', she: 'بدو بدو', we: 'بدنا بدكم', they: 'بدك بدك', youmale: 'بدك بدك', youfemale: 'بدنا بدنا', youplural: 'بدهم بدهم' } 
+                // "want" has no separate past/future in the dialect; every tense uses the same subject form.
+                past: { i: 'بدي', he: 'بدو', she: 'بدها', we: 'بدنا', they: 'بدهم', youmale: 'بدك', youfemale: 'بدك', youplural: 'بدكم' }, 
+                present: { i: 'بدي', he: 'بدو', she: 'بدها', we: 'بدنا', they: 'بدهم', youmale: 'بدك', youfemale: 'بدك', youplural: 'بدكم' }, 
+                future: { i: 'بدي', he: 'بدو', she: 'بدها', we: 'بدنا', they: 'بدهم', youmale: 'بدك', youfemale: 'بدك', youplural: 'بدكم' } 
             },
             16: { 
                 past: { i: 'مشيت', he: 'مشى', she: 'مشت', we: 'مشينا', they: 'مشوا', youmale: 'مشيت', youfemale: 'مشيت', youplural: 'مشيتُم' }, 
@@ -2145,161 +2146,161 @@ const ADVANCED_REFERENCE_DB = {
         2: {
             title: "هدول اولاد",
             slots: [
-                getDbItem('07 pronoun', 11, 'هدول'),
+                getDbItem('07 Pronoun', 11, 'هدول'),
                 getDbItem('01 subject', 4, 'اولاد')
             ]
         },
         3: {
             title: "هذه بنت",
             slots: [
-                getDbItem('07 pronoun', 5, 'هذه'),
+                getDbItem('07 Pronoun', 5, 'هذه'),
                 getDbItem('01 subject', 2, 'بنت')
             ]
         },
         4: {
             title: "هذا بابا",
             slots: [
-                getDbItem('07 pronoun', 4, 'هذا'),
+                getDbItem('07 Pronoun', 4, 'هذا'),
                 getDbItem('01 subject', 5, 'بابا')
             ]
         },
         5: {
             title: "هدول بنات",
             slots: [
-                getDbItem('07 pronoun', 11, 'هدول'),
+                getDbItem('07 Pronoun', 11, 'هدول'),
                 getDbItem('01 subject', 9, 'بنات')
             ]
         },
         6: {
             title: "هذه ماما",
             slots: [
-                getDbItem('07 pronoun', 5, 'هذه'),
+                getDbItem('07 Pronoun', 5, 'هذه'),
                 getDbItem('01 subject', 6, 'ماما')
             ]
         },
         7: {
             title: "هذه قبعة",
             slots: [
-                getDbItem('07 pronoun', 5, 'هذه'),
+                getDbItem('07 Pronoun', 5, 'هذه'),
                 getDbItem('03 object', 24, 'قبعة')
             ]
         },
         8: {
             title: "هذا كتاب",
             slots: [
-                getDbItem('07 pronoun', 4, 'هذا'),
+                getDbItem('07 Pronoun', 4, 'هذا'),
                 getDbItem('03 object', 17, 'كتاب')
             ]
         },
         9: {
             title: "هذا قلم",
             slots: [
-                getDbItem('07 pronoun', 4, 'هذا'),
+                getDbItem('07 Pronoun', 4, 'هذا'),
                 getDbItem('03 object', 80, 'قلم')
             ]
         },
         10: {
             title: "هذه تفاحة",
             slots: [
-                getDbItem('07 pronoun', 5, 'هذه'),
+                getDbItem('07 Pronoun', 5, 'هذه'),
                 getDbItem('03 object', 3, 'تفاحة')
             ]
         },
         11: {
             title: "هذه سيارة",
             slots: [
-                getDbItem('07 pronoun', 5, 'هذه'),
+                getDbItem('07 Pronoun', 5, 'هذه'),
                 getDbItem('03 object', 25, 'سيارة')
             ]
         },
         12: {
             title: "هذه طيارة",
             slots: [
-                getDbItem('07 pronoun', 5, 'هذه'),
+                getDbItem('07 Pronoun', 5, 'هذه'),
                 getDbItem('03 object', 84, 'طيارة')
             ]
         },
         13: {
             title: "هي نملة",
             slots: [
-                getDbItem('07 pronoun', 5, 'هي'),
+                getDbItem('07 Pronoun', 5, 'هي'),
                 getDbItem('03 object', 2, 'نملة')
             ]
         },
         14: {
             title: "هدول نملات",
             slots: [
-                getDbItem('07 pronoun', 11, 'هدول'),
+                getDbItem('07 Pronoun', 11, 'هدول'),
                 getDbItem('01 subject', 83, 'نملات')
             ]
         },
         15: {
             title: "هي سيارة",
             slots: [
-                getDbItem('07 pronoun', 5, 'هي'),
+                getDbItem('07 Pronoun', 5, 'هي'),
                 getDbItem('03 object', 25, 'سيارة')
             ]
         },
         16: {
             title: "هدول سيارات",
             slots: [
-                getDbItem('07 pronoun', 11, 'هدول'),
+                getDbItem('07 Pronoun', 11, 'هدول'),
                 getDbItem('03 object', 156, 'سيارات')
             ]
         },
         17: {
             title: "هي قطة",
             slots: [
-                getDbItem('07 pronoun', 5, 'هي'),
+                getDbItem('07 Pronoun', 5, 'هي'),
                 getDbItem('01 subject', 71, 'قطة')
             ]
         },
         18: {
             title: "هدول قطط",
             slots: [
-                getDbItem('07 pronoun', 11, 'هدول'),
+                getDbItem('07 Pronoun', 11, 'هدول'),
                 getDbItem('01 subject', 73, 'قطط')
             ]
         },
         19: {
             title: "هذا كتاب",
             slots: [
-                getDbItem('07 pronoun', 4, 'هذا'),
+                getDbItem('07 Pronoun', 4, 'هذا'),
                 getDbItem('03 object', 17, 'كتاب')
             ]
         },
         20: {
             title: "هدول كتب",
             slots: [
-                getDbItem('07 pronoun', 11, 'هدول'),
+                getDbItem('07 Pronoun', 11, 'هدول'),
                 getDbItem('03 object', 57, 'كتب')
             ]
         },
         21: {
             title: "هذا موبايل",
             slots: [
-                getDbItem('07 pronoun', 4, 'هذا'),
+                getDbItem('07 Pronoun', 4, 'هذا'),
                 getDbItem('03 object', 82, 'موبايل')
             ]
         },
         22: {
             title: "هدول موبايلات",
             slots: [
-                getDbItem('07 pronoun', 11, 'هدول'),
+                getDbItem('07 Pronoun', 11, 'هدول'),
                 getDbItem('03 object', 157, 'موبايلات')
             ]
         },
         23: {
             title: "هذه مفتاح",
             slots: [
-                getDbItem('07 pronoun', 5, 'هذه'),
+                getDbItem('07 Pronoun', 5, 'هذه'),
                 getDbItem('03 object', 158, 'مفتاح')
             ]
         },
         24: {
             title: "هدول مفاتيح",
             slots: [
-                getDbItem('07 pronoun', 11, 'هدول'),
+                getDbItem('07 Pronoun', 11, 'هدول'),
                 getDbItem('03 object', 60, 'مفاتيح')
                 ]
             }
@@ -2441,14 +2442,14 @@ const ADVANCED_REFERENCE_DB = {
         20: {
             title: "في عرباية",
             slots: [
-                getDbItem('08 conjunctions', 11, 'في'),
+                getDbItem('08 linking', 11, 'في'),
                 getDbItem('03 object', 110, 'عرباية')
             ]
         },
         21: {
             title: "في تخت",
             slots: [
-                getDbItem('08 conjunctions', 11, 'في'),
+                getDbItem('08 linking', 11, 'في'),
                 getDbItem('03 object', 9, 'تخت')
             ]
         },
@@ -2462,14 +2463,14 @@ const ADVANCED_REFERENCE_DB = {
         23: {
             title: "في بيت",
             slots: [
-                getDbItem('08 conjunctions', 11, 'في'),
+                getDbItem('08 linking', 11, 'في'),
                 getDbItem('03 object', 94, 'بيت')
             ]
         },
         24: {
             title: "في سيارة",
             slots: [
-                getDbItem('08 conjunctions', 11, 'في'),
+                getDbItem('08 linking', 11, 'في'),
                 getDbItem('03 object', 25, 'سيارة')
                 ]
             }
@@ -2872,7 +2873,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "ولد و بنت",
             slots: [
                 getDbItem('01 subject', 1, 'ولد'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 2, 'بنت')
             ]
         },
@@ -2880,7 +2881,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "اولاد و بنات",
             slots: [
                 getDbItem('01 subject', 4, 'اولاد'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 9, 'بنات')
             ]
         },
@@ -2888,7 +2889,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "بابا و ماما",
             slots: [
                 getDbItem('01 subject', 5, 'بابا'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 6, 'ماما')
             ]
         },
@@ -2896,7 +2897,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "كلب و قطة",
             slots: [
                 getDbItem('01 subject', 74, 'كلب'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 71, 'قطة')
             ]
         },
@@ -2904,7 +2905,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "شوكة و سكين",
             slots: [
                 getDbItem('03 object', 44, 'شوكة'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('03 object', 61, 'سكين')
             ]
         },
@@ -2912,7 +2913,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "قطة و عصفور",
             slots: [
                 getDbItem('01 subject', 71, 'قطة'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('03 object', 13, 'عصفور')
             ]
         },
@@ -2920,7 +2921,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "انسة و طالب",
             slots: [
                 getDbItem('01 subject', 17, 'انسة'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 18, 'طالب')
             ]
         },
@@ -2928,7 +2929,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "ساحر و ساحرة",
             slots: [
                 getDbItem('01 subject', 68, 'ساحر'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 62, 'ساحرة')
             ]
         },
@@ -2936,7 +2937,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "نحلة و نملة",
             slots: [
                 getDbItem('03 object', 10, 'نحلة'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('03 object', 2, 'نملة')
             ]
         },
@@ -2944,7 +2945,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "فيل و اسد",
             slots: [
                 getDbItem('01 subject', 90, 'فيل'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 96, 'اسد')
             ]
         },
@@ -2952,7 +2953,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "فرشاية و معجون",
             slots: [
                 getDbItem('03 object', 21, 'فرشاية'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 128, 'معجون')
             ]
         },
@@ -2960,7 +2961,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "شمس و قمر",
             slots: [
                 getDbItem('03 object', 111, 'شمس'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('03 object', 68, 'قمر')
             ]
         },
@@ -2968,7 +2969,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "دكتور و دكتورة",
             slots: [
                 getDbItem('01 subject', 21, 'دكتور'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 22, 'دكتورة')
             ]
         },
@@ -2976,7 +2977,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "شبح و ولد",
             slots: [
                 getDbItem('01 subject', 109, 'شبح'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 1, 'ولد')
             ]
         },
@@ -2984,7 +2985,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "فارة و قطة",
             slots: [
                 getDbItem('01 subject', 77, 'فارة'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 71, 'قطة')
             ]
         },
@@ -2992,7 +2993,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "عصفور و دودة",
             slots: [
                 getDbItem('03 object', 13, 'عصفور'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 86, 'دودة')
             ]
         },
@@ -3000,7 +3001,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "سمكة و حورية",
             slots: [
                 getDbItem('01 subject', 93, 'سمكة'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 103, 'حورية')
             ]
         },
@@ -3008,7 +3009,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "ديناصور و الجبل",
             slots: [
                 getDbItem('01 subject', 84, 'ديناصور'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('04 place', 37, 'الجبل')
             ]
         },
@@ -3016,7 +3017,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "ذئب و بنت",
             slots: [
                 getDbItem('01 subject', 114, 'ذئب'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 2, 'بنت')
             ]
         },
@@ -3024,7 +3025,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "رسام و الوان",
             slots: [
                 getDbItem('01 subject', 53, 'رسام'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('10 colors', 1, 'الوان')
             ]
         },
@@ -3032,7 +3033,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "الحمام و المطبخ",
             slots: [
                 getDbItem('04 place', 7, 'الحمام'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('04 place', 35, 'المطبخ')
             ]
         },
@@ -3040,7 +3041,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "الشارع و الرصيف",
             slots: [
                 getDbItem('04 place', 50, 'الشارع'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('04 place', 40, 'الرصيف')
             ]
         },
@@ -3048,7 +3049,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "شرطي و اطفائي",
             slots: [
                 getDbItem('01 subject', 24, 'شرطي'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 33, 'اطفائي')
             ]
         },
@@ -3056,7 +3057,7 @@ const ADVANCED_REFERENCE_DB = {
             title: "المستشفى و شرطة",
             slots: [
                 getDbItem('04 place', 32, 'المستشفى'),
-                getDbItem('07 pronouns', 2, 'و'),
+                getDbItem('08 linking', 3, 'و'),
                 getDbItem('01 subject', 26, 'شرطة')
                 ]
             }
@@ -3696,7 +3697,7 @@ const ADVANCED_REFERENCE_DB = {
         7: {
             title: "انا مع طاقية",
             slots: [
-                getDbItem('07 pronoun', 1, 'انا'),
+                getDbItem('07 Pronoun', 1, 'انا'),
                 getDbItem('08 linking', 14, 'مع'),
                 getDbItem('03 object', 53, 'طاقية')
             ]
@@ -3704,7 +3705,7 @@ const ADVANCED_REFERENCE_DB = {
         8: {
             title: "انت مع كتاب",
             slots: [
-                getDbItem('07 pronoun', 7, 'انت') ,
+                getDbItem('07 Pronoun', 7, 'انت') ,
                 getDbItem('08 linking', 14, 'مع'),
                 getDbItem('03 object', 17, 'كتاب')
             ]
@@ -3712,7 +3713,7 @@ const ADVANCED_REFERENCE_DB = {
         9: {
             title: "انتِ مع قلم",
             slots: [
-                getDbItem('07 pronoun', 8, 'انتِ'),
+                getDbItem('07 Pronoun', 8, 'انتِ'),
                 getDbItem('08 linking', 14, 'مع'),
                 getDbItem('03 object', 80, 'قلم')
             ]
@@ -3720,7 +3721,7 @@ const ADVANCED_REFERENCE_DB = {
         10: {
             title: "نحن مع تفاحة",
             slots: [
-                getDbItem('07 pronoun', 10, 'نحن'),
+                getDbItem('07 Pronoun', 10, 'نحن'),
                 getDbItem('08 linking', 14, 'مع'),
                 getDbItem('03 object', 3, 'تفاحة')
             ]
@@ -3728,7 +3729,7 @@ const ADVANCED_REFERENCE_DB = {
         11: {
             title: "هم مع سيارة",
             slots: [
-                getDbItem('07 pronoun', 6, 'هم'),
+                getDbItem('07 Pronoun', 6, 'هم'),
                 getDbItem('08 linking', 14, 'مع'),
                 getDbItem('03 object', 25, 'سيارة')
             ]
@@ -3736,7 +3737,7 @@ const ADVANCED_REFERENCE_DB = {
         12: {
             title: "هم مع طيارة",
             slots: [
-                getDbItem('07 pronoun', 6, 'هم'),
+                getDbItem('07 Pronoun', 6, 'هم'),
                 getDbItem('08 linking', 14, 'مع'),
                 getDbItem('03 object', 84, 'طيارة')
             ]
@@ -5206,7 +5207,7 @@ const ADVANCED_REFERENCE_DB = {
                 getDbItem('01 subject', 1, 'ولد'),
                 getDbItem('02 verbs', 5, 'يتحمم', { verbTense: 'present', conjugation: 'he' }),
                 getDbItem('03 object', 32, 'ساعة'),
-                getDbItem('12 numbers', 9, '9')
+                getDbItem('11 numbers', 9, '9')
             ]
         },
         10: {
@@ -5215,7 +5216,7 @@ const ADVANCED_REFERENCE_DB = {
                 getDbItem('01 subject', 2, 'بنت'),
                 getDbItem('02 verbs', 5, 'تتحمم', { verbTense: 'present', conjugation: 'she' }),
                 getDbItem('03 object', 32, 'ساعة'),
-                getDbItem('12 numbers', 6, '6')
+                getDbItem('11 numbers', 6, '6')
             ]
         },
         11: {
@@ -5305,7 +5306,7 @@ const ADVANCED_REFERENCE_DB = {
                 getDbItem('01 subject', 1, 'ولد'),
                 getDbItem('02 verbs', 57, 'يكتب', { verbTense: 'present', conjugation: 'he' }),
                 getDbItem('03 object', 32, 'ساعة'),
-                getDbItem('12 numbers', 10, '10')
+                getDbItem('11 numbers', 10, '10')
             ]
         },
         21: {
@@ -9218,7 +9219,7 @@ const ADVANCED_REFERENCE_DB = {
             slots: [
                 getDbItem('01 subject', 5, 'بابا'),
                 getDbItem('02 verbs', 26, 'يطبخ', { verbTense: 'present', conjugation: 'he' }),
-                getDbItem('02 object', 162, 'اكل'),
+                getDbItem('03 object', 162, 'اكل'),
                 getDbItem('01 subject', 5, 'بابا'),
                 getDbItem('02 verbs', 15, 'بدو', { verbTense: 'present', conjugation: 'he' }),
                 getDbItem('02 verbs', 26, 'يطبخ', { verbTense: 'present', conjugation: 'he' })
@@ -9229,7 +9230,7 @@ const ADVANCED_REFERENCE_DB = {
             slots: [
                 getDbItem('01 subject', 6, 'ماما'),
                 getDbItem('02 verbs', 26, 'تطبخ', { verbTense: 'present', conjugation: 'she' }),
-                getDbItem('02 object', 162, 'اكل'),
+                getDbItem('03 object', 162, 'اكل'),
                 getDbItem('01 subject', 6, 'ماما'),
                 getDbItem('02 verbs', 15, 'بدها', { verbTense: 'present', conjugation: 'she' }),
                 getDbItem('02 verbs', 26, 'تطبخ', { verbTense: 'present', conjugation: 'she' })

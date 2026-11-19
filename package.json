@@ -8,6 +8,8 @@
     "test": "node tests/verb-context.cjs && node tests/audio.cjs && node tests/activities-model.cjs && node tests/offline.cjs && node tests/child-progress.cjs && node tests/session-model.cjs && node tests/acquisition-reports.cjs && node tests/demo-position.cjs && node tests/session-homework.cjs && node tests/intervention.cjs",
     "test:browser": "node tests/standalone-browser.cjs && node tests/intervention-browser.cjs && node tests/intervention-browser.cjs 820x1180 && node tests/dynamic-browser.cjs && node tests/expression-animation-browser.cjs && node tests/workplace-frame-browser.cjs && node tests/workplace-metronome-browser.cjs && node tests/picker-progress-browser.cjs",
     "build:icons": "node scripts/build-icons.cjs",
+    "build:sounds:pdf": "node scripts/build-sound-pdf.cjs",
+    "build:pronoun:pdf": "node scripts/build-pronoun-check-pdf.cjs",
     "test:workplace:browser": "node tests/workplace-metronome-browser.cjs && node tests/workplace-frame-browser.cjs",
     "test:expression:browser": "node tests/expression-animation-browser.cjs",
     "test:sessions": "node tests/child-progress.cjs && node tests/session-model.cjs && node tests/session-reports.cjs",

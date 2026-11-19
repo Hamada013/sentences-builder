@@ -110,6 +110,11 @@ function fixture({ speech = false, reject = null } = {}) {
         return results;
     })()`, context);
     for (const {code, id, segments} of paths) {
+        if (id === 15) {
+            // "want" itself is one clip in every tense, never "بدو بدو".
+            assert.deepEqual(Array.from(segments, segment => segment.path), [`sounds/verbs/present/${code}/15.m4a`]);
+            continue;
+        }
         assert.equal(segments.length, 2);
         assert.equal(segments[0].path, `sounds/verbs/present/${code}/15.m4a`);
         assert.equal(segments[1].path, `sounds/verbs/present/${code}/${id}.m4a`);
