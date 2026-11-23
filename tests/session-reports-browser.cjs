@@ -42,7 +42,7 @@ const server = http.createServer((req, res) => {
         await context.setOffline(true);
         const downloadPromise = page.waitForEvent('download');
         await page.getByRole('button',{name:'طباعة التقارير',exact:true}).click();
-        assert.equal(await page.locator('.senb-print-dialog input').count(), 1, 'Only the summary while therapist mode is closed');
+        assert.equal(await page.locator('.senb-print-dialog [data-choice]').count(), 1, 'Only the summary while therapist mode is closed');
         await page.locator('.senb-print-dialog [data-go]').click();
         const download = await downloadPromise; const pdfPath=path.join(output,'senb-report.pdf'); await download.saveAs(pdfPath);
         const pdf = fs.readFileSync(pdfPath);

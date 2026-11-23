@@ -360,17 +360,18 @@
         const choices = [['summary', 'ملخص التقدم', 'دقة الفهم والتعبير والاكتساب حسب المجموعة']];
         if (root.InterventionPlan?.isActive() && progress()?.intervention()?.goals?.length) choices.push(['goals', 'أهداف خطة التدخل', 'قيد العمل · تحققت · مقترحة']);
         if (!printDialog) { printDialog = document.createElement('dialog'); printDialog.className = 'senb-print-dialog'; printDialog.dir = 'rtl'; printDialog.innerHTML = '<h2>طباعة التقارير</h2><p>اختر التقارير. كل تقرير يُنزَّل في ملف PDF منفصل.</p><div class="senb-print-list"></div><footer><button type="button" data-go>تنزيل</button><button type="button" data-cancel>إلغاء</button></footer>'; document.body.append(printDialog); }
-        printDialog.querySelector('.senb-print-list').innerHTML = choices.map(([id, label, hint]) => `<label><input type="checkbox" value="${id}" checked><span><b>${label}</b><small>${hint}</small></span></label>`).join('');
-        const go = printDialog.querySelector('[data-go]'), sync = () => { go.disabled = !printDialog.querySelector('input:checked'); };
-        printDialog.querySelectorAll('input').forEach(input => { input.onchange = sync; }); sync();
+        printDialog.querySelector('.senb-print-list').innerHTML = choices.map(([id, label, hint]) => `<button type="button" class="print-choice" data-choice="${id}" aria-pressed="true"><span class="print-tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 7"/></svg></span><span><b>${label}</b><small>${hint}</small></span></button>`).join('');
+        const go = printDialog.querySelector('[data-go]'), sync = () => { go.disabled = !printDialog.querySelector('[aria-pressed=true]'); };
+        printDialog.querySelectorAll('[data-choice]').forEach(el => { el.onclick = () => { el.setAttribute('aria-pressed', String(el.getAttribute('aria-pressed') !== 'true')); sync(); }; }); sync();
         printDialog.showModal();
-        return new Promise(resolve => { go.onclick = () => { const ids = [...printDialog.querySelectorAll('input:checked')].map(input => input.value); printDialog.close(); resolve(ids); }; printDialog.querySelector('[data-cancel]').onclick = () => { printDialog.close(); resolve(null); }; printDialog.oncancel = () => resolve(null); });
+        return new Promise(resolve => { go.onclick = () => { const ids = [...printDialog.querySelectorAll('[data-choice][aria-pressed=true]')].map(button => button.dataset.choice); printDialog.close(); resolve(ids); }; printDialog.querySelector('[data-cancel]').onclick = () => { printDialog.close(); resolve(null); }; printDialog.oncancel = () => resolve(null); });
     }
     async function download() {
         if (busy) return;
         const chosen = await choosePrint(); if (!chosen?.length) return;
         if (chosen.includes('goals')) { try { const doc = await root.InterventionPlan.reportPdf(); doc.save(`جملة-الأهداف-${(currentModel?.title || 'الطفل').replace(/[^\p{L}\p{N}_-]/gu, '_')}.pdf`); } catch { reportDialog.querySelector('[data-report-status]').textContent = 'تعذّر تنزيل تقرير الأهداف.'; } if (!chosen.includes('summary')) return; await new Promise(resolve => setTimeout(resolve, 400)); }
         if (!chosen.includes('summary')) return;
+        if (chosen.includes('goals')) await new Promise(resolve => setTimeout(resolve, 900)); // keep both downloads
         busy = true;
         const control = reportDialog.querySelector('[data-report-action=download]'), status = reportDialog.querySelector('[data-report-status]');
         control.disabled = true; status.textContent = '';
