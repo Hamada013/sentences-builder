@@ -98,3 +98,8 @@ button.app-logo-download:focus-visible{outline:3px solid #0284c7;outline-offset:
  .app-home-shell .app-home-tools.suite-toolbar,.app-header .header-actions.suite-toolbar,.topbar nav.suite-toolbar{flex:1 1 100%;justify-content:flex-start}
  .game-header.suite-toolbar .game-brand{justify-content:flex-end}
 }
+/* Settings panel: every tool shows one short word under the icon, so the adult does not have to guess. */
+.suite-settings-panel button[title]:not(.child-button){display:inline-flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:auto!important;height:auto!important;min-width:64px;min-height:58px;padding:6px 4px!important}
+.suite-settings-panel button[title]:not(.child-button)::after{content:attr(data-short);font:700 11.5px/1.25 Cairo,sans-serif;color:#475569;max-width:76px;text-align:center;white-space:nowrap}
+.suite-settings-panel button[title].hidden{display:none!important}
+[data-senb-child-profile][hidden]{display:none!important}

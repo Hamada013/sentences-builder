@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const { chromium } = require(process.env.SENB_PLAYWRIGHT || 'playwright');
 const root = path.resolve(__dirname, '..');
 const output = path.resolve(__dirname, '../../../tmp/pdfs/senb-report-check');
-const fixture = '<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/assets/session-reports.css"><link rel="stylesheet" href="/assets/acquisition-charts.css"><script src="/assets/acquisition-charts.js"></script><body><main id="buttons"></main><script src="/assets/activity-report.js"></script><script src="/assets/session-reports.js"></script></body></html>';
+const fixture = '<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/assets/session-reports.css"><link rel="stylesheet" href="/assets/acquisition-charts.css"><script src="/assets/acquisition-charts.js"></script><body><main id="buttons"></main><script src="/assets/activity-report.js"></script><script src="/assets/session-homework.js"></script><script src="/assets/session-reports.js"></script></body></html>';
 const server = http.createServer((req, res) => {
     if (req.url === '/report-fixture.html') { res.writeHead(200, {'Content-Type':'text/html;charset=utf-8'}); return res.end(fixture); }
     const file = path.resolve(root, '.' + decodeURIComponent(new URL(req.url, 'http://localhost').pathname));
@@ -41,7 +41,9 @@ const server = http.createServer((req, res) => {
         await page.screenshot({path:path.join(output,'desktop.png')});
         await context.setOffline(true);
         const downloadPromise = page.waitForEvent('download');
-        await page.getByRole('button',{name:'تنزيل تقرير PDF',exact:true}).click();
+        await page.getByRole('button',{name:'طباعة التقارير',exact:true}).click();
+        assert.equal(await page.locator('.senb-print-dialog input').count(), 1, 'Only the summary while therapist mode is closed');
+        await page.locator('.senb-print-dialog [data-go]').click();
         const download = await downloadPromise; const pdfPath=path.join(output,'senb-report.pdf'); await download.saveAs(pdfPath);
         const pdf = fs.readFileSync(pdfPath);
         assert.ok(pdf.subarray(0,8).toString().startsWith('%PDF-1.4'));

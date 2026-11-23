@@ -207,6 +207,9 @@ function syncWorkplaceDeleteMode() {
     const label=state.deleteMode?'إنهاء وضع الحذف':'تفعيل وضع الحذف';
     button.setAttribute('aria-label',label);button.title=label;
     if(!state.deleteMode)document.querySelectorAll('#workplaceView .workplace-delete-card').forEach(card=>card.classList.remove('workplace-delete-card'));
+    // Delete mode turns itself off 2 seconds after the last tap; each deleted card restarts the 2 seconds.
+    clearTimeout(syncWorkplaceDeleteMode.timer);
+    if(state.deleteMode)syncWorkplaceDeleteMode.timer=setTimeout(()=>{if(state.deleteMode)applyWorkplaceSettings({ deleteMode: false });},2000);
 }
 function toggleWorkplaceDeleteMode() {
     applyWorkplaceSettings({ deleteMode: !state.deleteMode });

@@ -27,6 +27,22 @@
         window.addEventListener('DOMContentLoaded', update, { once: true });
         window.addEventListener('suite-avatar-change', update);
         document.querySelector('.header-actions.app-home-tools, .app-home-tools')?.append(button);
+        // Level for a new child (سهل by default), and on each row the level menu and a rename button.
+        let newLevel = 'easy', chips = null;
+        const levelChips = () => chips ||= (() => { const group = window.ChildLevel.chips('easy', value => { newLevel = value; }); dialog.querySelector('.account-add-row').after(group); return group; })();
+        const pencil = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4ZM13 7l4 4"/></svg>';
+        function tools(child, redraw) {
+            const level = window.ChildLevel.menu(child.level, value => { if (!P.setLevel(child.id, value)) return false; child.level = value; if (child.id === P.active()?.id) window.dispatchEvent(new Event('senb-level-change')); }, `مستوى ${child.name}`);
+            const rename = document.createElement('button'); rename.type = 'button'; rename.className = 'account-rename'; rename.setAttribute('aria-label', `تعديل اسم ${child.name}`); rename.title = 'تعديل الاسم'; rename.innerHTML = pencil;
+            rename.onclick = () => {
+                const row = rename.closest('.suite-account-row'), box = row.querySelector('.suite-account-select'), form = document.createElement('form'), field = document.createElement('input'), saveButton = document.createElement('button');
+                form.className = 'account-rename-form'; field.value = child.name; field.maxLength = 60; field.dir = 'auto'; field.required = true; field.setAttribute('aria-label', 'الاسم الجديد'); saveButton.type = 'submit'; saveButton.textContent = 'حفظ';
+                form.append(field, saveButton); box.replaceWith(form); field.focus(); field.select();
+                form.onsubmit = event => { event.preventDefault(); if (P.rename(child.id, field.value)) { update(); redraw(); } else { field.setCustomValidity('هذا الاسم مستخدم أو فارغ'); field.reportValidity(); } };
+                field.oninput = () => field.setCustomValidity(''); field.onkeydown = event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); redraw(); } };
+            };
+            return [level, rename];
+        }
         const enter = name => {
             name = String(name || '').normalize('NFKC').trim().replace(/\s+/g, ' ').slice(0, 60);
             if (!name) { input.focus(); return; }
@@ -35,7 +51,7 @@
             authorized = false;
             window.dispatchEvent(new Event('senb-profile-beforechange'));
             const previous = P.active()?.id;
-            if (!P.signIn(name)) return;
+            if (!P.signIn(name, newLevel)) return;
             window.AppNavigation?.register();
             if (previous !== P.active().id && P.storageOK()) { window.SuiteWelcome?.skipNextLoad(); location.reload(); }
             else {
@@ -56,10 +72,12 @@
                 input.value = typeof requestedName === 'string' ? requestedName : '';
                 dialog.querySelector('[data-child-close]').hidden = !P.active();
                 const savedChildren = dialog.querySelector('.senb-saved-children');
-                window.SuiteAccounts.render(savedChildren,P.children(),child=>{
+                levelChips().reset();
+                const draw=()=>window.SuiteAccounts.render(savedChildren,P.children(),child=>{
                     const saved=document.createElement('button');saved.type='button';saved.textContent=child.name;saved.onclick=()=>enter(child.name);
-                    return window.SuiteAccounts.row(child,saved);
+                    return window.SuiteAccounts.row(child,saved,tools(child,draw));
                 });
+                draw();
                 if (!dialog.open) dialog.showModal();
                 input.focus();
             } finally { opening = false; }

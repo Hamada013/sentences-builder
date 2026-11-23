@@ -47,7 +47,9 @@ function setActivityBusy(busy) {
 }
 function openActivitySetup(mode) {
     navigateTo('activity');
-    activity = { mode, mount: 'setup', folder: null, subgroup: null, gameSubgroups: [], presentation: 'advanced', trialsPerSubgroup: 3, repeatCount: 1, index: 0, results: [], completed: new Set(), busy: false, autoplay: false };
+    // The sentence length starts at the child's level (سهل 2 words, متوسط 4, متقدم 5); it can still be changed.
+    const levelFolder = window.SenbProgress?.WORDS?.[window.SenbProgress.level?.()]?.[0] || null;
+    activity = { mode, mount: 'setup', folder: levelFolder, subgroup: null, gameSubgroups: [], presentation: 'advanced', trialsPerSubgroup: 3, repeatCount: 1, index: 0, results: [], completed: new Set(), busy: false, autoplay: false };
     renderActivitySetup();
 }
 function chooseActivityMode(mode) { activity.mode = mode; renderActivitySetup(); }

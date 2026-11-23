@@ -32,7 +32,9 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+deco
   await page.evaluate(()=>events=[]);await page.locator('#sessionContinue').click();await ready();await counts();
   assert.equal(await page.evaluate(()=>SenbProgress.sessions().length),0,'The model never logs a response');
   const correct=await correctMissing();await drag((correct+1)%3);await page.locator('.session-answer.no').waitFor();await ready();await drag(correct);await page.locator('.session-answer.yes').waitFor();
-  await page.waitForFunction(()=>SenbSessionModel.stages(SenbSession.state().worked)[SenbSession.state().stageIndex].id==='receptive-advanced');
+  // Comprehension now comes before the games box, so it is started on its own.
+  await page.waitForFunction(()=>SenbSessionModel.stages(SenbSession.state().worked)[SenbSession.state().stageIndex].id!=='missing');
+  await seed('receptive-advanced',2);
   await page.locator('.session-demo-hand').waitFor();assert.equal(await page.locator('[data-sentence-choice]:not(:disabled)').count(),0);await ready();
   const correctSentence=await page.evaluate(()=>{const r=SenbSession.state();return r.currentChoices.findIndex(s=>s.key===r.worked[0].key);});
   await page.locator(`[data-sentence-choice="${(correctSentence+1)%4}"]`).click();await page.locator('.session-answer.no').waitFor();await ready();await page.locator(`[data-sentence-choice="${correctSentence}"]`).click();

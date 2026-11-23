@@ -111,7 +111,46 @@
     const LEVELS = [20, 40, 60, 80];
     const ACHIEVED = 80;
     const byId = new Map(GOALS.flatMap(goal => goal.short.map(item => [item.id, { ...item, long: goal }])));
-    const api = { APP, SOURCES, GOALS, PLANS, LEVELS, ACHIEVED, short: id => byId.get(id) || null };
+    // ---- Estimates from the child's saved test sessions (child.senb.sessions) ----
+    // Sentence keys are «s:<words>/<subgroup>/<item>», so the sentence length is the first number.
+    // Goals without scored answers in the app (repetition, grammar, rhythm, questions) stay therapist-rated.
+    const DAY = 864e5;
+    const lengthOf = key => Number(/^s:(\d+)\//.exec(String(key))?.[1]) || 0;
+    const test = (domain, lengths) => (record, context) => context.kind === 'assessment' && record.entity === 'sentence' && record.domain === domain && record.total > 0 && lengths.includes(lengthOf(record.key));
+    const MEASURES = {
+        'S1.1': test('receptive', [2]), 'S1.2': test('receptive', [3]), 'S1.3': test('receptive', [4]), 'S1.4': test('receptive', [5, 6]),
+        'S2.4': test('expressive', [2]), 'S2.5': test('expressive', [3]), 'S2.6': test('expressive', [4, 5, 6]),
+        'S6.3': (record, context) => context.kind === 'assessment' && record.entity === 'sentence' && record.total > 0 && context.gapDays(record.key + record.domain) >= 14
+    };
+    /** Each session moves the estimate halfway toward that session's score, so it builds up or falls back
+     *  over time. A goal is achieved after 3 sessions in a row at 80% or more. */
+    function estimate(child) {
+        const sessions = (child?.senb?.sessions || []).filter(session => !session.partial && Array.isArray(session.records))
+            .map(session => ({ ...session, time: Date.parse(session.date || session.startedAt) || 0 })).sort((a, b) => a.time - b.time);
+        const lastTested = new Map(), out = {};
+        for (const session of sessions) {
+            const context = { kind: session.kind, gapDays: id => lastTested.has(id) ? (session.time - lastTested.get(id)) / DAY : -1 };
+            for (const [id, counts] of Object.entries(MEASURES)) {
+                let right = 0, total = 0;
+                for (const record of session.records) if (counts(record, context)) { right += Number(record.correct) || 0; total += Number(record.total) || 0; }
+                if (!total) continue;
+                const score = Math.round(right / total * 100), goal = out[id] ||= { percent: null, sessions: 0, streak: 0, achieved: null, history: [] };
+                goal.percent = goal.percent == null ? score : Math.round((goal.percent + score) / 2);
+                goal.sessions++; goal.streak = score >= ACHIEVED ? goal.streak + 1 : 0;
+                goal.last = new Date(session.time).toISOString(); goal.history.push({ date: goal.last, score, percent: goal.percent });
+                if (goal.streak >= 3 && !goal.achieved) goal.achieved = goal.last;
+            }
+            if (session.kind === 'assessment') for (const record of session.records) lastTested.set(record.key + record.domain, session.time);
+        }
+        return out;
+    }
+    /** Suggested next goals: after an achieved goal, the next goal of the same long-term goal not in the plan yet. */
+    function suggest(planIds, achievedIds, limit = 4) {
+        const inPlan = new Set(planIds), done = new Set(achievedIds), out = [];
+        for (const goal of GOALS) { const ids = goal.short.map(item => item.id); if (!ids.some(id => done.has(id))) continue; const next = ids.find(id => !inPlan.has(id)); if (next) out.push(next); }
+        return out.slice(0, limit);
+    }
+    const api = { MEASURES, estimate, suggest, APP, SOURCES, GOALS, PLANS, LEVELS, ACHIEVED, short: id => byId.get(id) || null };
     if (typeof module !== 'undefined') module.exports = api;
     root.InterventionGoals = api;
 })(globalThis);

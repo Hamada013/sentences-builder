@@ -72,10 +72,14 @@
   function sync(){
    const active=isWorkplace();toggle.hidden=!active;if(active===settings.active)return;settings.active=active;closeSettings();
    if(active){
-    const nodes=appId==='senb'?[document.getElementById('clearBoardBtn'),document.getElementById('workplaceHeaderToolbar'),host.querySelector('[data-senb-child-profile]')]:[...host.children].filter(node=>node!==toggle&&!node.matches('[data-suite-menu],[data-session-end],#stars-container'));
+    const nodes=appId==='senb'?[document.getElementById('clearBoardBtn'),document.getElementById('workplaceHeaderToolbar')]:[...host.children].filter(node=>node!==toggle&&!node.matches('[data-suite-menu],[data-session-end],#stars-container'));
     settings.entries=nodes.filter(Boolean).map(node=>{const marker=document.createComment('workplace control');node.before(marker);panel.append(node);return {node,marker};});
     for(const control of panel.querySelectorAll('button[title]'))if(!control.hasAttribute('aria-label'))control.setAttribute('aria-label',control.title);
+    // One short word under each tool; the full name stays in the tooltip and for screen readers.
+    const SHORT={'عدد البطاقات':'البطاقات','مستويات الكلمات':'المستويات','تفعيل وضع الحذف':'حذف','إنهاء وضع الحذف':'حذف','عشوائي':'خلط','درس البيت للأهل':'الأهل','تقرير الطفل':'التقرير','إعادة الصوت':'الصوت','إنهاء الوضع':'إنهاء','الرئيسية':'الرئيسية','وضع الجمل المتكاملة ++':'متكاملة','عدد الخانات':'الخانات','تشغيل الجملة':'تشغيل','تشغيل التدريب التلقائي':'تلقائي','اختبار الجملة':'اختبار','تدريب الجملة':'تدريب','وضع المعالج':'المعالج','خطة التدخل':'الخطة','تقسيم مساحة العمل إلى جملتين':'جملتين','إظهار/إخفاء إيقاع الجملة':'الإيقاع','إظهار/إخفاء الدوائر الملونة والعناوين':'الدوائر'};
+    for(const control of panel.querySelectorAll('button[title]'))control.dataset.short||=SHORT[control.title]||control.title;
    }else{for(const {node,marker}of settings.entries){marker.replaceWith(node);}settings.entries=[];}
+   if(appId==='senb'){const child=host.querySelector('[data-senb-child-profile]');if(child)child.hidden=active;}
    orderControls(host);orderControls(panel);
   }
   function position(){panel.style.top=Math.min(host.closest('header').getBoundingClientRect().bottom+8,innerHeight-80)+'px';panel.style.maxHeight=Math.max(100,innerHeight-parseFloat(panel.style.top)-16)+'px';if(appId==='voc'&&!panel.hidden)document.body.style.setProperty('--voc-settings-space',(panel.getBoundingClientRect().height+24)+'px');}

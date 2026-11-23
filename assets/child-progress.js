@@ -3,6 +3,9 @@
     'use strict';
     const STORAGE = 'sentences-builder-v1';
     const domains = ['receptive', 'expressive'];
+    const LEVELS = { easy: 'سهل', moderate: 'متوسط', advanced: 'متقدم' };
+    // Sentence length (words) for each child level.
+    const LEVEL_WORDS = { easy: [2, 3], moderate: [4], advanced: [5, 6] };
     const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
     const empty = () => ({ schema: 1, active: null, children: [] });
     const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
@@ -38,7 +41,7 @@
                 const before = baseline.children.find(saved => saved.id === child.id);
                 let saved = merged.children.find(entry => entry.id === child.id);
                 if (!saved) { merged.children.push(clone(child)); continue; }
-                for (const field of ['name', 'created', 'role', 'apps']) {
+                for (const field of ['name', 'level', 'created', 'role', 'apps']) {
                     if (!same(child[field], before?.[field])) saved[field] = field === 'apps' ? { ...saved.apps, ...Object.fromEntries(Object.entries(child.apps || {}).filter(([, value]) => value === true)) } : clone(child[field]);
                 }
                 if (!same(child.senb, before?.senb)) {
@@ -75,7 +78,7 @@
                 return false;
             }
         }
-        function signIn(name) {
+        function signIn(name, newLevel = 'easy') {
             const resetData=read();
             if(JSON.stringify(resetData?.accountResets||{})!==JSON.stringify(resetEpochs)){data=resetData||data;baseline=clone(data);resetEpochs={...data.accountResets};}
 
@@ -88,7 +91,7 @@
             let child = data.children.find(entry => normalizeName(entry.name).toLocaleLowerCase() === name.toLocaleLowerCase());
             if (existing && !child) { child = clone(existing); data.children.push(child); }
             if (!child) {
-                child = { id: root.crypto?.randomUUID?.() || `child-${Date.now()}-${Math.random().toString(36).slice(2)}`, name, apps: { senb: true }, role: 'child', created: new Date().toISOString(), words: {}, workspace: null, plan: null, sessions: [] };
+                child = { id: root.crypto?.randomUUID?.() || `child-${Date.now()}-${Math.random().toString(36).slice(2)}`, name, level: LEVELS[newLevel] ? newLevel : 'easy', apps: { senb: true }, role: 'child', created: new Date().toISOString(), words: {}, workspace: null, plan: null, sessions: [] };
                 data.children.push(child);
             }
             child.apps = { ...child.apps, voc: true, senb: true, taffaha: true };
@@ -132,9 +135,17 @@
         }
         const load = field => clone(active()?.senb?.[field] ?? null);
         const save = (field, value) => { if (!active()) return false; state(active())[field] = clone(value); return persist(); };
+        // Each child has a level, set on the account; it chooses the sentence length (2–3, 4, 5–6 words).
+        const level = () => LEVELS[active()?.level] ? active().level : 'easy';
+        function setLevel(childId, value) { const child = data.children.find(entry => entry.id === childId); if (!child || !LEVELS[value]) return false; child.level = value; return persist(); }
+        function rename(childId, name) {
+            name = normalizeName(name); const child = data.children.find(entry => entry.id === childId);
+            if (!child || !name || data.children.some(entry => entry.id !== childId && normalizeName(entry.name).toLocaleLowerCase() === name.toLocaleLowerCase())) return false;
+            child.name = name; return persist();
+        }
         return {
-            active, signIn, logSession,
-            children: () => data.children.map(({ id, name, role }) => ({ id, name, role })),
+            active, signIn, logSession, level, setLevel, rename, LEVELS, WORDS: LEVEL_WORDS,
+            children: () => data.children.map(({ id, name, role, level }) => ({ id, name, role, level: LEVELS[level] ? level : 'easy' })),
             workspace: () => load('workspace'), saveWorkspace: snapshot => save('workspace', snapshot),
             draft: () => load('draft'), saveDraft: draft => save('draft', draft),
             lesson: () => load('lesson'), saveLesson: lesson => save('lesson', lesson),

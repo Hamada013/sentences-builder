@@ -45,7 +45,7 @@
         }
         updateResume();
     }
-    function stage() { return M.stages(run.worked)[run.stageIndex]; }
+    function stage() { return M.stages(run.worked, run.games || null)[run.stageIndex]; }
     function sentence() { return run.phase === 'automation' ? run.worked[stage().indices[run.stagePosition]] : run.current; }
     function setProgress(value,max) { $('#senbSessionProgress').max = Math.max(1,max); $('#senbSessionProgress').value = value; }
     const originalNavigate = navigateTo;
@@ -369,10 +369,41 @@
         if(run.stagePosition>=currentStage.indices.length)return advanceStage();
         const s=sentence();base(stageNames[currentStage.id]);
         setProgress(currentStage.id==='repetition'?run.stagePosition*10+run.repeatIndex:run.stagePosition,currentStage.indices.length*(currentStage.id==='repetition'?10:1));
+        $('#sessionBoard').classList.toggle('session-glow',currentStage.id==='repetition'||currentStage.id==='review');
         if(currentStage.id==='repetition'){showSentence(s,s.presentation==='advanced'&&s.imgPath?'advanced':'slots',$('#sessionBoard'));status(`${run.repeatIndex+1} / 10`);void repetition();}
+        else if(currentStage.id==='review'){
+            // Only sentences answered wrong in comprehension; each plays once, then 1 second, with no buttons.
+            if(!(run.failedSentences||[]).includes(currentStage.indices[run.stagePosition])){nextTrial();return;}
+            showSentence(s,s.presentation==='advanced'&&s.imgPath?'advanced':'slots',$('#sessionBoard'));status('نعيد الجملة');void reviewSentence();
+        }
+        else if(currentStage.id==='choose'){showGamesBox();}
         else if(currentStage.id==='missing'){run.trialPhase ||= 'guide';renderMissing(s);void choiceFlow('missing');}
         else if(currentStage.domain==='receptive'){run.trialPhase ||= 'guide';renderComprehension(s,currentStage);}
         else {run.trialPhase ||= 'guide';renderExpression(s,currentStage);if(run.trialPhase!=='test')void expressionModel(s,currentStage.presentation);}
+    }
+    async function reviewSentence() {
+        if(audioBusy)return;const ticket=token,s=sentence();audioBusy=true;$('#sessionReplay').disabled=true;
+        const played=await segments(wholeSegments(s),ticket);if(ticket!==token)return;audioBusy=false;
+        if(played&&await wait(1000,ticket))nextTrial();
+    }
+    // Games box after comprehension: البطاقة الناقصة and/or the expressive tests, or finish here.
+    let gamesBox;
+    function showGamesBox() {
+        if(!gamesBox){
+            gamesBox=document.createElement('dialog');gamesBox.className='senb-games-box';gamesBox.dir='rtl';gamesBox.setAttribute('aria-labelledby','senbGamesTitle');
+            gamesBox.innerHTML='<h2 id="senbGamesTitle">نكمل بالألعاب؟</h2><div class="senb-games-list"><button type="button" data-game="missing" aria-pressed="true"><b>البطاقة الناقصة</b><small>الكلمة الناقصة في الجملة</small></button><button type="button" data-game="expressive" aria-pressed="true"><b>اختبار التعبير</b><small>الطفل يقول الجملة</small></button></div><footer class="suite-text-actions"><button type="button" data-games-go>يلا نكمل</button><button type="button" data-games-end>إنهاء</button></footer>';
+            document.body.append(gamesBox);
+            gamesBox.querySelectorAll('[data-game]').forEach(button=>{button.onclick=()=>button.setAttribute('aria-pressed',String(button.getAttribute('aria-pressed')!=='true'));});
+            gamesBox.addEventListener('cancel',event=>event.preventDefault());
+        }
+        gamesBox.querySelectorAll('[data-game]').forEach(button=>button.setAttribute('aria-pressed','true'));
+        gamesBox.querySelector('[data-games-go]').onclick=()=>{
+            const games=[...gamesBox.querySelectorAll('[data-game][aria-pressed=true]')].map(button=>button.dataset.game);gamesBox.close();
+            if(!games.length){run.games=[];complete();return;}
+            run.games=games;advanceStage();
+        };
+        gamesBox.querySelector('[data-games-end]').onclick=()=>{gamesBox.close();run.games=[];complete();};
+        if(!gamesBox.open)gamesBox.showModal();
     }
     async function repetition() {
         if(audioBusy)return;const ticket=token,s=sentence();audioBusy=true;$('#sessionReplay').disabled=true;
@@ -420,8 +451,8 @@
     async function answerMissing(index) {
         if(audioBusy||!run.answerReady||run.trialPhase!=='test')return;run.answerReady=false;audioBusy=true;lockTrial(true);const ticket=token,correct=M.wordKey(run.missing.choices[index])===run.missing.wanted;
         if(!await flash(correct,ticket))return;audioBusy=false;
-        if(!correct){void choiceFlow('missing');return;}
-        log('missing','practice',[]);run.missing=null;nextTrial();
+        if(!correct){void window.VocPrompts?.retry();void choiceFlow('missing');return;}
+        void window.VocPrompts?.praise();log('missing','practice',[]);run.missing=null;nextTrial();
     }
     function choicesFor(s,presentation) {
         let pool=run.worked.filter(other=>other.key!==s.key);
@@ -465,7 +496,10 @@
     async function answerSentence(index) {
         if(audioBusy||!run.answerReady)return;run.answerReady=false;$('#sessionBoard').querySelectorAll('button').forEach(el=>el.disabled=true);
         const ticket=token,s=sentence(),correct=M.sentenceKey(run.currentChoices[index])===M.sentenceKey(s);
-        if(!correct){window.SessionHomework?.record({activity:'اختبار فهم الجمل',label:s.title,entity:'sentence',needsHelp:true});run.trialWrong=true;save();if(await flash(false,ticket))void promptSentence();return;}
+        if(!correct){window.SessionHomework?.record({activity:'اختبار فهم الجمل',label:s.title,entity:'sentence',needsHelp:true});
+            const sentenceIndex=stage().indices[run.stagePosition];if(!run.trialWrong&&!(run.failedSentences ||= []).includes(sentenceIndex))run.failedSentences.push(sentenceIndex);
+            run.trialWrong=true;save();void window.VocPrompts?.retry();if(await flash(false,ticket))void promptSentence();return;}
+        void window.VocPrompts?.praise();
         const currentStage=stage();run.stageRecords.push(M.record(s,'receptive',currentStage.presentation,!run.trialWrong));run.pendingTransition='trial';save();
         if(await flash(true,ticket))nextTrial();
     }
@@ -526,7 +560,7 @@
     $('#sessionReplay').onclick=()=>{
         if(!run||audioBusy)return;
         if(run.phase==='guide')void guided();else if(run.phase==='dynamic-test')void playTarget();
-        else if(run.phase==='automation'){const currentStage=stage();if(currentStage.id==='repetition')void repetition();else if(currentStage.id==='missing')void choiceFlow('missing');else if(currentStage.domain==='receptive')void promptSentence();else void expressionModel(sentence(),currentStage.presentation);}
+        else if(run.phase==='automation'){const currentStage=stage();if(currentStage.id==='repetition')void repetition();else if(currentStage.id==='review')void reviewSentence();else if(currentStage.id==='choose')showGamesBox();else if(currentStage.id==='missing')void choiceFlow('missing');else if(currentStage.domain==='receptive')void promptSentence();else void expressionModel(sentence(),currentStage.presentation);}
     };
     const startButton=document.createElement('button');startButton.type='button';startButton.id='workplaceDynamicTest';startButton.className='senb-session-icon';startButton.setAttribute('aria-label','اختبار الجملة');startButton.title='اختبار الجملة';startButton.innerHTML=svg('test');startButton.onclick=()=>start('test');$('#workplaceHeaderToolbar').append(startButton);
     const practiceButton=document.createElement('button');practiceButton.type='button';practiceButton.id='workplacePractice';practiceButton.className='senb-session-icon';practiceButton.setAttribute('aria-label','تدريب الجملة');practiceButton.title='تدريب الجملة';practiceButton.innerHTML=svg('repeat');practiceButton.onclick=()=>{window.AppNavigation?.closeSettings();start('practice');};$('#workplaceHeaderToolbar').append(practiceButton);

@@ -14,15 +14,22 @@
         }
         return result;
     }
-    function stages(sentences) {
+    // Automatic plan: repetition → comprehension → failed sentences repeated → games box → the chosen
+    // practice game (missing word) and/or the expressive tests. `games` is set by the box; before it,
+    // every later stage is listed so stage numbers stay stable.
+    function stages(sentences, games = null) {
         const all = sentences.map((_, index) => index), illustrated = all.filter(index => sentences[index].imgPath);
+        const chosen = id => !games || games.includes(id);
         return [
             { id: 'repetition', kind: 'practice', indices: all, repeats: 10 },
-            { id: 'missing', kind: 'practice', indices: all },
             { id: 'receptive-advanced', domain: 'receptive', presentation: 'advanced', kind: 'assessment', indices: illustrated },
             { id: 'receptive-slots', domain: 'receptive', presentation: 'slots', kind: 'assessment', indices: all },
-            { id: 'expressive-advanced', domain: 'expressive', presentation: 'advanced', kind: 'assessment', indices: illustrated },
-            { id: 'expressive-slots', domain: 'expressive', presentation: 'slots', kind: 'assessment', indices: all }
+            { id: 'review', kind: 'practice', indices: all },
+            { id: 'choose', kind: 'practice', indices: [0] },
+            ...(chosen('missing') ? [{ id: 'missing', kind: 'practice', indices: all }] : []),
+            ...(chosen('expressive') ? [
+                { id: 'expressive-advanced', domain: 'expressive', presentation: 'advanced', kind: 'assessment', indices: illustrated },
+                { id: 'expressive-slots', domain: 'expressive', presentation: 'slots', kind: 'assessment', indices: all }] : [])
         ].filter(stage => stage.indices.length);
     }
     function targets(sentence) {
