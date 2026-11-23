@@ -9,6 +9,7 @@
         more: '<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM17 14v6M14 17h6"/>',
         play: '<path d="m8 5 11 7-11 7z"/>', pause: '<path d="M8 5v14M16 5v14"/>',
         repeat: '<path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/>',
+        route: '<circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><path d="M7 18h6a4 4 0 0 0 0-8h-2a4 4 0 0 1 0-8h6"/>',
         close: '<path d="m6 6 12 12M18 6 6 18"/>', next: '<path d="m15 5-7 7 7 7"/>',
         check: '<path d="m5 12 4 4L19 6"/>', test: '<path d="M8 5H6a2 2 0 0 0-2 2v13h16V7a2 2 0 0 0-2-2h-2M9 3h6v4H9zM8 12h8M8 16h5"/>',
         home: '<path d="m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10"/>',
@@ -20,6 +21,9 @@
     const view = document.createElement('main'); view.id = 'sessionView'; view.className = 'senb-session-view'; view.hidden = true;
     view.innerHTML = `<div class="senb-session-bar"><h2 id="sessionHeading" tabindex="-1">جلسة الجمل</h2><div>${button('sessionReplay','play','أعد الاستماع')}${button('sessionPause','pause','إيقاف مؤقت')}${button('sessionStop','close','إنهاء المسار')}</div></div><progress id="senbSessionProgress" aria-label="تقدم المرحلة" max="1" value="0"></progress><p id="sessionStatus" role="status" aria-live="polite"></p><section id="sessionBoard" class="senb-session-board" aria-label="بطاقات الجلسة"></section><div id="sessionActions" class="senb-session-actions"></div>`;
     document.body.append(view);
+    // Expression tests: a camera mirror beside the sentence for imitation (shown only in those stages).
+    const mirrorToggle = window.SuiteMirror?.attach({ toggleHost: view.querySelector('.senb-session-bar > div'), card: () => $('#sessionBoard') });
+    if (mirrorToggle) mirrorToggle.hidden = true;
     const curtain = document.createElement('div'); curtain.className = 'senb-session-curtain'; curtain.hidden = true; curtain.setAttribute('role','status'); curtain.setAttribute('aria-live','assertive'); document.body.append(curtain);
     const completion = document.createElement('dialog');
     completion.className = 'suite-dialog'; completion.id = 'sessionCompletion';
@@ -66,6 +70,9 @@
     function base(title) {
         $('#sessionHeading').textContent = title; $('#sessionBoard').replaceChildren(); $('#sessionBoard').className = 'senb-session-board';
         $('#sessionActions').replaceChildren();$('#sessionActions').classList.remove('suite-text-actions'); status(''); $('#sessionReplay').hidden = false; $('#sessionPause').hidden = false; $('#sessionStop').hidden = false;
+        const speaking = run?.phase === 'automation' && stage()?.domain === 'expressive';
+        if (mirrorToggle) mirrorToggle.hidden = !speaking || !navigator.mediaDevices?.getUserMedia;
+        if (!speaking && window.SuiteMirror?.isOpen()) window.SuiteMirror.close();
     }
     async function segments(list,ticket=token) {
         for (const segment of list) {
@@ -179,6 +186,7 @@
         save();enter();render();
     }
     function start(mode) {
+        window.pickGlowColour?.();
         window.AppNavigation?.closeSettings();
         const snapshot=getWorkplaceSentence();
         if(!snapshot?.slots?.length){showAudioStatus('أضف بطاقات للجملة أولاً.');return;}
@@ -254,7 +262,7 @@
     async function automationCountdown() {
         const ticket=token;
         for(const value of [1,2,3]){curtain.innerHTML=`<span class="session-count" data-count="${value}">${value}</span>`;curtain.hidden=false;if(!await wait(800,ticket))return;}
-        curtain.hidden=true;run.phase='automation';save();render();
+        curtain.hidden=true;window.pickGlowColour?.();run.phase='automation';save();render();
     }
     function renderAnother() {
         base('نكمل التدريب؟');$('#sessionReplay').hidden=true;$('#sessionPause').hidden=true;$('#sessionStop').hidden=true;
@@ -368,9 +376,9 @@
         const currentStage=stage();if(!currentStage)return complete();
         if(run.stagePosition>=currentStage.indices.length)return advanceStage();
         const s=sentence();base(stageNames[currentStage.id]);
-        setProgress(currentStage.id==='repetition'?run.stagePosition*10+run.repeatIndex:run.stagePosition,currentStage.indices.length*(currentStage.id==='repetition'?10:1));
+        const repeats=currentStage.repeats||5;setProgress(currentStage.id==='repetition'?run.stagePosition*repeats+run.repeatIndex:run.stagePosition,currentStage.indices.length*(currentStage.id==='repetition'?repeats:1));
         $('#sessionBoard').classList.toggle('session-glow',currentStage.id==='repetition'||currentStage.id==='review');
-        if(currentStage.id==='repetition'){showSentence(s,s.presentation==='advanced'&&s.imgPath?'advanced':'slots',$('#sessionBoard'));status(`${run.repeatIndex+1} / 10`);void repetition();}
+        if(currentStage.id==='repetition'){showSentence(s,s.presentation==='advanced'&&s.imgPath?'advanced':'slots',$('#sessionBoard'));status(`${run.repeatIndex+1} / ${currentStage.repeats||5}`);void repetition();}
         else if(currentStage.id==='review'){
             // Only sentences answered wrong in comprehension; each plays once, then 1 second, with no buttons.
             if(!(run.failedSentences||[]).includes(currentStage.indices[run.stagePosition])){nextTrial();return;}
@@ -407,10 +415,11 @@
     }
     async function repetition() {
         if(audioBusy)return;const ticket=token,s=sentence();audioBusy=true;$('#sessionReplay').disabled=true;
-        const list=[...wholeSegments(s),...(s.soundPath?s.slots.flatMap((_,i)=>slotSegments(s,i)):[])];
+        // Repetition plays only the whole (++) sentence, not its separate word cards.
+        const list=wholeSegments(s);
         if(!await segments(list,ticket)){if(ticket===token){audioBusy=false;$('#sessionReplay').disabled=false;}return;}
         if(!await wait(350,ticket))return;audioBusy=false;run.repeatIndex++;
-        if(run.repeatIndex===10){run.repeatIndex=0;log('repetition','practice',[]);run.stagePosition++;}
+        if(run.repeatIndex>=(stage().repeats||5)){run.repeatIndex=0;log('repetition','practice',[]);run.stagePosition++;}
         save();if(run.stagePosition===stage().indices.length)advanceStage();else render();
     }
     function renderMissing(s) {
@@ -528,7 +537,7 @@
         run.stageIndex++;run.trialPhase=null;run.answerReady=false;run.stagePosition=0;run.repeatIndex=0;run.stageRecords=[];run.missing=null;run.currentChoices=null;run.marks=null;run.trialWrong=false;run.stageStartedAt=new Date().toISOString();save();render();
     }
     function complete() {
-        cancel();run.phase='finished';save();P.saveDraft(null);updateResume();
+        window.SuiteMirror?.close();cancel();run.phase='finished';save();P.saveDraft(null);updateResume();
         window.SenbSessionReports?.prepareLesson?.({sentences:run.worked,sessionIds:run.sessionIds});
         navigateTo('workplace');completion.showModal();
     }
@@ -554,7 +563,7 @@
         const effectivePhase=run.phase==='paused'?run.resumePhase:run.phase;
         const records=effectivePhase==='automation'&&stage()?.kind==='assessment'?run.stageRecords:effectivePhase==='dynamic-test'?run.dynamicRecords:[];
         if(records?.length)log('interrupted','assessment',records,true);
-        cancel();P.saveDraft(null);run=null;updateResume();navigateTo('workplace');
+        window.SuiteMirror?.close();cancel();P.saveDraft(null);run=null;updateResume();navigateTo('workplace');
     }
     $('#sessionPause').onclick=pause;$('#sessionStop').onclick=stop;
     $('#sessionReplay').onclick=()=>{
@@ -564,7 +573,7 @@
     };
     const startButton=document.createElement('button');startButton.type='button';startButton.id='workplaceDynamicTest';startButton.className='senb-session-icon';startButton.setAttribute('aria-label','اختبار الجملة');startButton.title='اختبار الجملة';startButton.innerHTML=svg('test');startButton.onclick=()=>start('test');$('#workplaceHeaderToolbar').append(startButton);
     const practiceButton=document.createElement('button');practiceButton.type='button';practiceButton.id='workplacePractice';practiceButton.className='senb-session-icon';practiceButton.setAttribute('aria-label','تدريب الجملة');practiceButton.title='تدريب الجملة';practiceButton.innerHTML=svg('repeat');practiceButton.onclick=()=>{window.AppNavigation?.closeSettings();start('practice');};$('#workplaceHeaderToolbar').append(practiceButton);
-    const playButton=$('#sequencePlayBtn');playButton.onclick=promptAutomation;playButton.setAttribute('aria-label','تشغيل التدريب التلقائي');playButton.title='تشغيل التدريب التلقائي';
+    const playButton=$('#sequencePlayBtn');playButton.onclick=promptAutomation;playButton.innerHTML=svg('route');playButton.setAttribute('aria-label','تشغيل التدريب التلقائي');playButton.title='تشغيل التدريب التلقائي';
     const resume=document.createElement('button');resume.id='resumeSenbSession';resume.type='button';resume.className='senb-session-icon';resume.setAttribute('aria-label','متابعة الجلسة المحفوظة');resume.title='متابعة الجلسة المحفوظة';resume.innerHTML=svg('play');$('#homeHeaderTools').append(resume);
     function updateResume(){resume.hidden=!P.draft();}
     resume.onclick=()=>{cancel();run=P.draft();if(!run)return;if(run.phase==='selecting'){navigateTo('workplace');return;}run.resumePhase=run.phase==='paused'?run.resumePhase:run.phase;run.phase='paused';enter();render();};updateResume();

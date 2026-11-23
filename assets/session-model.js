@@ -21,7 +21,7 @@
         const all = sentences.map((_, index) => index), illustrated = all.filter(index => sentences[index].imgPath);
         const chosen = id => !games || games.includes(id);
         return [
-            { id: 'repetition', kind: 'practice', indices: all, repeats: 10 },
+            { id: 'repetition', kind: 'practice', indices: all, repeats: 5 },
             { id: 'receptive-advanced', domain: 'receptive', presentation: 'advanced', kind: 'assessment', indices: illustrated },
             { id: 'receptive-slots', domain: 'receptive', presentation: 'slots', kind: 'assessment', indices: all },
             { id: 'review', kind: 'practice', indices: all },

@@ -123,7 +123,7 @@
         const items = [...chosen.values()];
         const sentences = items.filter(item => item.entity !== 'word').map(item => item.title);
         const words = items.filter(item => item.entity === 'word').map(item => item.title);
-        const lines = [`مرحباً، أنا ${name || 'طفلكم'}! 🌷`];
+        const lines = [`مرحباً، أنا ${name || 'طفلكم'}!`];
         if (sentences.length) lines.push(`اليوم اشتغلت على هالجمل: ${sentences.join('، ')}.`);
         if (words.length) lines.push(`واشتغلت على هالكلمات: ${words.join('، ')}.`);
         if (!items.length) lines.push('اليوم تدرّبت على الكلام والفهم خلال اللعب.');
@@ -143,7 +143,7 @@
             if (unseen.length) lines.push(`ما سجّلنا نتيجة بهالمهارة لـ: ${unseen.join('، ')}.`);
         }
         const activity = root.SessionHomework?.homeActivity || (typeof module !== 'undefined' ? require('./session-homework.js').homeActivity : null);
-        lines.push('', 'ماما وبابا، خلّونا نلعب شوي بالبيت! 💛', activity('senb', items.map(item=>({label:item.title,entity:item.entity}))), 'اعطوني وقت أنفّذ أو أشير؛ مو ضروري أحكي.');
+        lines.push('', 'ماما وبابا، خلّونا نلعب شوي بالبيت!', activity('senb', items.map(item=>({label:item.title,entity:item.entity}))), 'اعطوني وقت أنفّذ أو أشير؛ مو ضروري أحكي.');
         return lines.join('\n');
     }
     const api = { periods, domains, presentations, percent, periodStart, summarize, acquisition, lessonText };

@@ -13,7 +13,7 @@ const url=file=>SITE+file.split('/').map(encodeURIComponent).join('/');
 const image=id=>'data:image/webp;base64,'+fs.readFileSync(path.join(root,`images/07 pronouns/${id}.webp`)).toString('base64');
 // What a typical card in each position is expected to show, for comparison only.
 const SUGGEST={'انا':['تبعي','تبعتي'],'هاد':['تبعو','تبعتو'],'هي':['تبعها','تبعتها'],'هذا':['تبعو','تبعتو'],'هذه':['تبعها','تبعتها'],'هم':['تبعهم','تبعتهم'],'انتَ':['تبعك','تبعتك'],'انتِ':['تبعك','تبعتك'],'انتما':['تبعكم','تبعتكم'],'نحن':['تبعنا','تبعتنا'],'هدول':['تبعهم','تبعتهم']};
-const KINDS=[['pronoun','الضمير','عادي'],['for possessive male noun','مع اسم مذكر','ملكية ♂'],['for possessive female noun','مع اسم مؤنث','ملكية ♀'],['for possessive verbs','مع الأفعال','أفعال']];
+const KINDS=[['pronoun','الضمير','عادي'],['for possessive male noun','مع اسم مذكر','ملكية مذكر'],['for possessive female noun','مع اسم مؤنث','ملكية مؤنث'],['for possessive verbs','مع الأفعال','أفعال']];
 const play=(folder,id)=>{const file=`sounds/${folder}/${id}.m4a`;return fs.existsSync(path.join(root,file))?`<a class="play" href="${esc(url(file))}">▶</a>`:'<span class="none">لا يوجد</span>';};
 const rows=cards.map(card=>{const word=card.title.trim(),[m,f]=SUGGEST[word]||['',''];
  return `<section class="card"><div class="pic"><img src="${image(card.id)}" alt=""><b>${card.id}</b></div><div class="body">

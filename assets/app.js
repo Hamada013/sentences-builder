@@ -415,7 +415,7 @@ function renderModalCategoriesList() {
         const isSelected = cat.id === state.activeCategory;
         btn.className = `w-full text-right p-2 sm:p-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 ${isSelected ? 'bg-sky-500 text-white' : 'bg-white text-slate-700'}`;
         btn.onclick = () => selectCategory(cat.id);
-        btn.innerHTML = `<span>${cat.icon}</span><span class="truncate">${cat.name}</span>`;
+        btn.innerHTML = `<span class="inline-block w-3 h-3 rounded-full flex-none ${cat.color}" aria-hidden="true"></span><span class="truncate">${cat.name}</span>`;
         listContainer.appendChild(btn);
     });
 }

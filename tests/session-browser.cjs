@@ -63,7 +63,7 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+deco
  });
  await page.locator('#sessionContinue').click();
  assert.equal(await page.evaluate(()=>SenbSession.state().worked.length),2);
- const repetitionClips=await page.evaluate(()=>SenbSession.state().worked.reduce((sum,s)=>sum+10*(1+s.slotContexts.flatMap(context=>context.segments).length),0));
+ const repetitionClips=await page.evaluate(()=>SenbSession.state().worked.reduce((sum,s)=>sum+5*(s.soundPath?1:s.slotContexts.flatMap(context=>context.segments).length),0));
  let countedRepetitions=false;
  const observed=new Set();let pausedSentence=false;
  while(await page.evaluate(()=>SenbSession.state().phase!=='finished')){
@@ -71,7 +71,7 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+deco
   if(run.phase!=='automation'){await page.waitForTimeout(50);continue;}
   const stages=await page.evaluate(()=>SenbSessionModel.stages(SenbSession.state().worked,SenbSession.state().games||null));const stage=stages[run.stageIndex];if(!stage){await page.waitForTimeout(50);continue;}observed.add(stage.id);
   if(stage.id==='repetition'||stage.id==='review'){await page.waitForTimeout(150);continue;}
-  if(!countedRepetitions){countedRepetitions=true;assert.equal(await page.evaluate(()=>window.clipStages.filter(clip=>clip.stage==='repetition').length),repetitionClips,'Every worked sentence plays its full contextual sequence exactly ten times');}
+  if(!countedRepetitions){countedRepetitions=true;assert.equal(await page.evaluate(()=>window.clipStages.filter(clip=>clip.stage==='repetition').length),repetitionClips,'Every worked sentence plays only its whole sentence, five times');}
   if(stage.id==='choose'){
    const box=page.locator('dialog.senb-games-box[open]');await box.waitFor();assert.equal(await box.locator('[data-game][aria-pressed=true]').count(),2,'Both games are chosen by default');
    await page.screenshot({path:'/private/tmp/senb-games-box.png'});await box.locator('[data-games-go]').click();await page.waitForTimeout(150);continue;
@@ -104,6 +104,6 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+deco
  await page.evaluate(()=>document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close()));await page.evaluate(()=>{const r=SenbSession.state();SenbSessionReports.openLesson({sentences:r.worked,sessionIds:r.sessionIds});});await page.locator('dialog[open] textarea').waitFor();const lesson=await page.locator('dialog[open] textarea').inputValue();assert.ok(lesson.includes('ليان'));assert.ok(lesson.includes('ماما'));await page.screenshot({path:'/private/tmp/senb-family-lesson.png'});await page.keyboard.press('Escape');
  await page.evaluate(()=>SenbSessionReports.openReport());await page.locator('dialog[open]').waitFor();assert.equal(await page.locator('[data-period]').count(),6);await page.screenshot({path:'/private/tmp/senb-period-report.png'});
  // Browser report PDF download is also covered by reports-browser.cjs.
- assert.deepEqual(errors,[]);console.log('PASS: blocked-audio recovery, guided hand/ticks, countdown, first-answer errors, practice then test, exact plan with review and games box, ten repetitions, four assessment formats, saved family lesson and period report.');
+ assert.deepEqual(errors,[]);console.log('PASS: blocked-audio recovery, guided hand/ticks, countdown, first-answer errors, practice then test, exact plan with review and games box, five whole-sentence repetitions, four assessment formats, saved family lesson and period report.');
  }finally{await new Promise(resolve=>{server.close(resolve);server.closeAllConnections();});await browser.close();}
 })().catch(error=>{console.error(error);server.closeAllConnections();server.close();process.exitCode=1;});

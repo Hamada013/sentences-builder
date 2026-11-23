@@ -24,7 +24,7 @@
 .session-target-words>.senb-session-card {width:clamp(72px,14vw,150px);aspect-ratio:1;}
 .dynamic-board .session-advanced {aspect-ratio:16/9;max-height:min(36dvh,360px);width:min(100%,640px);margin:auto;}
 .session-advanced {aspect-ratio:16/9;max-width:780px;width:100%;max-height:50dvh;}
-.senb-session-card.session-glow {border-color:#19a880;background:#edfcf6;box-shadow:0 0 0 4px #a5ecd9,0 0 30px #29b78a60;}
+.senb-session-card.session-glow {border-color:var(--glow-edge,#19a880);background:#fff;box-shadow:0 0 0 4px var(--glow-edge,#a5ecd9),0 0 30px var(--glow-soft,#29b78a60);}
 .session-small-tick {position:absolute;inset-inline-end:6px;top:6px;background:#1ba473;color:white;border-radius:50%;width:28px;height:28px;padding:5px;}
 .session-small-tick svg {width:100%;height:100%;}
 .session-finger {position:absolute;bottom:6%;left:44%;width:clamp(32px,6vw,66px);height:70px;filter:drop-shadow(0 3px 4px #22445a44);animation:session-touch .65s ease-in-out both;}
@@ -74,10 +74,10 @@
 
 #senbSelectionPlay[hidden]{display:none!important}
 
-/* Repetition and review: the sentence glows blue while it plays. */
+/* Repetition and review: the sentence glows while it plays; each session picks baby blue, green or red (glow-colour.js). */
 #sessionBoard.session-glow{border-radius:24px;animation:senb-blue-glow 1s ease-in-out infinite alternate}
-@keyframes senb-blue-glow{from{box-shadow:0 0 0 4px #3b82f6,0 0 14px 4px #60a5fa88}to{box-shadow:0 0 0 8px #2563eb,0 0 30px 12px #3b82f6aa}}
-@media(prefers-reduced-motion:reduce){#sessionBoard.session-glow{animation:none;box-shadow:0 0 0 7px #2563eb}}
+@keyframes senb-blue-glow{from{box-shadow:0 0 0 4px var(--glow-edge,#60a5fa),0 0 14px 4px var(--glow-soft,#93c5fdaa)}to{box-shadow:0 0 0 8px var(--glow-edge,#60a5fa),0 0 30px 12px var(--glow-soft,#93c5fdaa)}}
+@media(prefers-reduced-motion:reduce){#sessionBoard.session-glow{animation:none;box-shadow:0 0 0 7px var(--glow-edge,#60a5fa)}}
 /* Games box after comprehension. */
 .senb-games-box{width:min(92vw,420px);border:0;border-radius:26px;padding:24px;box-shadow:0 20px 50px #0f172a33;font-family:system-ui,sans-serif}.senb-games-box::backdrop{background:#0f172a55;backdrop-filter:blur(4px)}
 .senb-games-box h2{margin:0 0 14px;text-align:center;color:#0369a1}

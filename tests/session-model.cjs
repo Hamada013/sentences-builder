@@ -4,7 +4,7 @@ const s={key:'s:2/1/1',title:'ولد يأكل',presentation:'advanced',imgPath:'
 const stages=M.stages([s,{...s,key:'s:2/1/2'}]);
 // Repetition → comprehension → failed sentences repeated → games box → the chosen games.
 assert.deepEqual(stages.map(stage=>stage.id),['repetition','receptive-advanced','receptive-slots','review','choose','missing','expressive-advanced','expressive-slots']);
-assert.ok(stages.filter(stage=>stage.id!=='choose').every(stage=>stage.indices.length===2));assert.equal(stages[0].repeats,10);
+assert.ok(stages.filter(stage=>stage.id!=='choose').every(stage=>stage.indices.length===2));assert.equal(stages[0].repeats,5);
 assert.deepEqual(M.stages([{...s,imgPath:null}]).map(stage=>stage.id),['repetition','receptive-slots','review','choose','missing','expressive-slots']);
 // The box picks the games; stages before it keep their positions.
 const two=[s,{...s,key:'s:2/1/2'}];

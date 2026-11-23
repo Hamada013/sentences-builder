@@ -1,18 +1,18 @@
 // SENB vocabulary, conjugations, image mappings, and sentence presets.
 
         const CATEGORIES = [
-            { id: '01 subject', name: 'أشخاص / فاعل', color: 'bg-blue-500', icon: '👤', path: 'images/01 subject/' },
-            { id: '02 verbs', name: 'أفعال', color: 'bg-emerald-500', icon: '🏃', path: 'images/02 verbs/' },
-            { id: '03 object', name: 'أشياء / مفعول', color: 'bg-amber-500', icon: '🍎', path: 'images/03 object/' },
-            { id: '04 place', name: 'أماكن', color: 'bg-purple-500', icon: '🏠', path: 'images/04 place/' },
-            { id: '05 adjectives', name: 'صفات', color: 'bg-pink-500', icon: '⭐', path: 'images/05 adjectives/' },
-            { id: '06 time', name: 'زمان', color: 'bg-indigo-500', icon: '⏰', path: 'images/06 time/' },
-            { id: '07 Pronoun', name: 'ضمائر', color: 'bg-sky-500', icon: '👆', path: 'images/07 Pronoun/' },
-            { id: '08 linking', name: 'أدوات ربط', color: 'bg-teal-500', icon: '🔗', path: 'images/08 linking/' },
-            { id: '09 Prepositions', name: 'حروف جر', color: 'bg-orange-500', icon: '📍', path: 'images/09 Prepositions/' },
-            { id: '10 colors', name: 'ألوان', color: 'bg-rose-500', icon: '🎨', path: 'images/10 colors/' },
-            { id: '11 numbers', name: 'أرقام', color: 'bg-cyan-500', icon: '🔢', path: 'images/11 numbers/' },
-            { id: '12 questions', name: 'أسئلة', color: 'bg-yellow-500', icon: '❓', path: 'images/12 questions/' }
+            { id: '01 subject', name: 'أشخاص / فاعل', color: 'bg-blue-500', path: 'images/01 subject/' },
+            { id: '02 verbs', name: 'أفعال', color: 'bg-emerald-500', path: 'images/02 verbs/' },
+            { id: '03 object', name: 'أشياء / مفعول', color: 'bg-amber-500', path: 'images/03 object/' },
+            { id: '04 place', name: 'أماكن', color: 'bg-purple-500', path: 'images/04 place/' },
+            { id: '05 adjectives', name: 'صفات', color: 'bg-pink-500', path: 'images/05 adjectives/' },
+            { id: '06 time', name: 'زمان', color: 'bg-indigo-500', path: 'images/06 time/' },
+            { id: '07 Pronoun', name: 'ضمائر', color: 'bg-sky-500', path: 'images/07 Pronoun/' },
+            { id: '08 linking', name: 'أدوات ربط', color: 'bg-teal-500', path: 'images/08 linking/' },
+            { id: '09 Prepositions', name: 'حروف جر', color: 'bg-orange-500', path: 'images/09 Prepositions/' },
+            { id: '10 colors', name: 'ألوان', color: 'bg-rose-500', path: 'images/10 colors/' },
+            { id: '11 numbers', name: 'أرقام', color: 'bg-cyan-500', path: 'images/11 numbers/' },
+            { id: '12 questions', name: 'أسئلة', color: 'bg-yellow-500', path: 'images/12 questions/' }
         ];
 
         // Each row maps subgroups 1–8 to their image folders.
